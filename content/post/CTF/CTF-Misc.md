@@ -1,66 +1,51 @@
 +++
-date = '2025-03-05T17:49:25+08:00'
-draft = true
-title = 'CTF Misc'
-
-image: mc.png
+date = 2025-03-05T17:49:25+08:00
+title = "CTF Misc"
+image = "mc.png"
 
 +++
-
-
-
-
 
 # Misc
 
 ## Kali（Linux系统）
 
-### **[1.extundelete](http://extundelete.sourceforge.net/)**
+### extundelete
 
 ```bash
 # 在linux上挂载光盘的命令
-
 mkdir /mnt/disk
 mount attachment.img /mnt/disk/
 cd /mnt/disk 
-
 #可以使用 eog 图片名 命令来查看图片
-
 #使用结束后用 
 umount: /mnt/disk 
 #命令取消挂载
-```
-
-```bash
 extundelete --restore-all attachment.img
 # 数据恢复成功后会生成一个 RECOVERED_FILES 文件
 ```
 
-### 2.压缩包套娃
+### 压缩包套娃
 
 ```bash
 while [ "find . -type f -name '*.tar.xz' | wc -l" -gt 0 ]; do find -type f -name "*.tar.xz" -exec tar xf '{}' \; -exec rm -- '{}' \;; done;
-```
-
-```bash
 strings flag 查找flag字符
 ```
 
-### 3.LSB（老色比）
+### LSB（老色比）
 
 ```bash
 zsteg -e "b8,rgb,lsb,xy" 1.png > diskimage.dat
 
 testdisk : testdisk diskimage.dat
 
-  C to copy the selected files, c to copy the current file  
+C to copy the selected files, c to copy the current file  
 ```
 
 ## Traffic（流量）
 
-#### 1.SMTP
+### SMTP
 
-#### 2.TLS
+### TLS
 
 ```RSA
 -----BEGIN RSA PRIVATE KEY-----
@@ -72,7 +57,7 @@ XXXXXXX
 
 - wireshark 编辑即可
 
-#### 3.**SMB**+hascat
+### **SMB**+hascat
 
 - 省赛的题目复现，讲一下自己的理解
 
@@ -80,69 +65,69 @@ XXXXXXX
 
 #### 猪圈密码：
 
-![](D:\Github\github_hugo\content\post\2.png)
+![](2.png)
 
 - **多类变种**
 
-![](D:\Github\github_hugo\content\post\1.png)
+![](1.png)
 
-![](D:\Github\github_hugo\content\post\3.png)
+![](3.png)
 
 - #### 圣堂武士密码（猪圈密码的变种）：
 
-![](D:\Github\github_hugo\content\post\5.png)
+![](5.png)
 
 #### 小猫密码：
 
-![](D:\Github\github_hugo\content\post\1.jpg)
+![](1.jpg)
 
 #### 五笔密码：
 
-![](D:\Github\github_hugo\content\post\4.png)
+![](4.png)
 
 #### 提瓦特大陆：
 
-![](D:\Github\github_hugo\content\post\6.png)
+![](6.png)
 
 #### 古埃及象形文字：
 
-![](D:\Github\github_hugo\content\post\7.png)
+![](7.png)
 
 #### 外星人密码：
 
-![](D:\Github\ctf-misc\pic\8.png)
+![](8.png)
 
 #### 克林贡语密码《星际迷航》：
 
-![](D:\Github\ctf-misc\pic\9.png)
+![](9.png)
 
 #### 元素周期表：
 
-![](D:\Github\ctf-misc\pic\10.png)
+![](10.png)
 
 #### 狄德拉字符(暗精灵活神)：
 
-![](D:\Github\ctf-misc\pic\11.png)
+![](11.png)
 
 #### 银河字母(游戏《指挥官基恩》)：
 
-![](D:\Github\ctf-misc\pic\12.png)
+![](12.png)
 
 #### 跳舞的小人：
 
-![](D:\Github\ctf-misc\pic\13.png)
+![](13.png)
 
 #### 旗语密码：
 
-![](D:\Github\ctf-misc\pic\14.png)
+![](14.png)
 
 #### 国际船用信号旗：
 
-![](D:\Github\ctf-misc\pic\16.png)
+![](16.png)
 
 #### 夏多密码（又称曲折密码）:
 
-![](D:\Github\ctf-misc\pic\17.png)
+![](17.png)
 
 在以上所示的字母表密钥的底部，列有四个附加符号1，2，3，4.他们可以放在密文中的任何地方。每个附加符号指示，如何转动写有密文的纸张，再进行后续的加密或解密操作，直到出现另一个附加符号。
 可以把每个附加符号中的那根线看作是指示针，它指示了纸张的上端朝上，朝下，朝左，朝右。比如说：
@@ -153,19 +138,19 @@ XXXXXXX
 
 #### 多斯拉克语字母表：
 
-![](D:\Github\ctf-misc\pic\18.png)
+![](18.png)
 
 #### 海利亚文字：
 
-![](D:\Github\ctf-misc\pic\19.png)
+![](19.png)
 
 #### Covenant字体：
 
-![](D:\Github\ctf-misc\pic\20.png)
+![](20.png)
 
 #### top cipher:
 
-![](D:\Github\ctf-misc\pic\15.png)
+![](15.png)
 
 exp:
 
