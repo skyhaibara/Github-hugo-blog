@@ -1,7 +1,7 @@
 +++
-date = 2025-03-05T17:49:25+08:00
+date = 2025-03-06T18:00:00+08:00
 title = "CTF Misc"
-image = "mc.png"
+image = "Mc.png"
 
 +++
 
@@ -38,7 +38,7 @@ zsteg -e "b8,rgb,lsb,xy" 1.png > diskimage.dat
 
 testdisk : testdisk diskimage.dat
 
-C to copy the selected files, c to copy the current file  
+ C to copy the selected files, c to copy the current file  
 ```
 
 ## Traffic（流量）
