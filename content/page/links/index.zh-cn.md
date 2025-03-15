@@ -12,9 +12,15 @@ links:
     image: ts-logo-128.jpg
 
   - title: PJAX
-    description: 本博客背景使用的页面加载
+    description: The page loading used by this blog background
     website: https://github.com/VincentGarreau/particles.js
     image: particles-logo.png
+
+  - title: hugo-theme-stack
+    description: Card-style Hugo theme designed for bloggers.
+    website: https://github.com/CaiJimmy/hugo-theme-stack
+    image: logo.png
+
 menu:
     main: 
         weight: -50
