@@ -4,10 +4,10 @@
     // 资源路径
     path: {
       homePath: "/",
-      modelPath: cdnPath + "/Resources/",
       tipsJsPath: cdnPath + "/waifu-tips.js",
       live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-      live2dSdkPath: cdnPath + "/live2d-sdk.js"
+      live2dSdkPath: cdnPath + "/live2d-sdk.js",
+      modelPath: cdnPath + "/Resources/"
     },
     // 工具栏
     tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
@@ -21,6 +21,8 @@
   }
   const cssPath = {{ (resources.Get "waifu/waifu.css").Permalink }}
   const tipsJsonPath = {{ (resources.Get "waifu/waifu-tips.json").Permalink }}
+  // const modelPath = {{ (resources.Get "waifu/model/").Permalink }}
+
   // 加载资源并初始化
   if (screen.width >= 768) {
     Promise.all([
@@ -39,6 +41,50 @@
       });
     });
   }
+  function initWaifuMouseEvent() {
+        const waifu = document.getElementById("waifu");
+        let isDown = false;
+        let waifuLeft;
+        let mouseLeft;
+        let waifuTop;
+        let mouseTop;
+        // 鼠标点击监听
+        waifu.onmousedown = function (e) {
+            isDown = true;
+            // 记录x轴
+            waifuLeft = waifu.offsetLeft;
+            mouseLeft = e.clientX;
+            // 记录y轴
+            waifuTop = waifu.offsetTop;
+            mouseTop = e.clientY;
+        }
+        // 鼠标移动监听
+        window.onmousemove = function (e) {
+            if (!isDown) {
+                return;
+            }
+            // x轴移动
+            let currentLeft = waifuLeft + (e.clientX - mouseLeft);
+            if (currentLeft < 0) {
+                currentLeft = 0;
+            } else if (currentLeft > window.innerWidth - 300) {
+                currentLeft = window.innerWidth - 300;
+            }
+            waifu.style.left = currentLeft  + "px";
+            // y轴移动
+            let currentTop = waifuTop + (e.clientY - mouseTop);
+            if (currentTop < 30) {
+                currentTop = 30
+            } else if (currentTop > window.innerHeight - 290) {
+                currentTop = window.innerHeight - 290
+            }
+            waifu.style.top = currentTop + "px";
+        }
+        // 鼠标点击松开监听
+        window.onmouseup = function (e) {
+            isDown = false;
+        }
+    }
 
   // 异步加载资源
   function loadExternalResource(url, type) {
@@ -173,7 +219,7 @@
 <style>
     .highlight {
         /* 你可以根据需要调整这个高度 */
-        max-height: 400px;
+        max-height: 40px;
         overflow: hidden;
     }
 
