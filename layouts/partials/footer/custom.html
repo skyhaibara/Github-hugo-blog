@@ -1,12 +1,12 @@
 <script>
   const cdnPath = "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master";
+  const cssPath = {{ (resources.Get "waifu/waifu.css").Permalink }};
+  const tipsJsonPath = {{ (resources.Get "waifu/waifu-tips.json").Permalink }};
   const config = {
     // 资源路径
     path: {
       homePath: "/",
       modelPath: cdnPath + "/Resources/",
-      cssPath: cdnPath + "/waifu.css",
-      tipsJsonPath: cdnPath + "/waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
       live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
       live2dSdkPath: cdnPath + "/live2d-sdk.js"
@@ -24,13 +24,13 @@
   // 加载资源并初始化
   if (screen.width >= 768) {
     Promise.all([
-      loadExternalResource(config.path.cssPath, "css"),
+      loadExternalResource(cssPath, "css"),
       loadExternalResource(config.path.live2dCorePath, "js"),
       loadExternalResource(config.path.live2dSdkPath, "js"),
       loadExternalResource(config.path.tipsJsPath, "js")
     ]).then(() => {
       initWidget({
-        waifuPath: config.path.tipsJsonPath,
+        waifuPath: tipsJsonPath,
         cdnPath: config.path.modelPath,
         tools: config.tools,
         dragEnable: config.drag.enable,
