@@ -1,38 +1,36 @@
 <script>
-  const cdnPath = "https://cdn.jsdelivr.net/gh/letere-gzj/live2d-widget-v3@main";
+  const cdnPath = "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master";
   const config = {
     // 资源路径
     path: {
       homePath: "/",
+      modelPath: cdnPath + "/Resources/",
+      cssPath: cdnPath + "/waifu.css",
+      tipsJsonPath: cdnPath + "/waifu-tips.json",
       tipsJsPath: cdnPath + "/waifu-tips.js",
       live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-      live2dSdkPath: cdnPath + "/live2d-sdk.js",
-      modelPath: cdnPath + "/Resources/"
+      live2dSdkPath: cdnPath + "/live2d-sdk.js"
     },
     // 工具栏
-    tools: ["hitokoto", "asteroids", "express", "switch-model", "switch-texture", "photo", "info", "quit"],
+    tools: ["hitokoto", "express", "switch-model", "info", "quit"],
     // 模型拖拽
     drag: {
       enable: true,
-      direction: ["x", "y"]
+      direction: ["x"]
     },
     // 模型切换(order: 顺序切换，random: 随机切换)
     switchType: "order"
   }
-  const cssPath = {{ (resources.Get "waifu/waifu.css").Permalink }}
-  const tipsJsonPath = {{ (resources.Get "waifu/waifu-tips.json").Permalink }}
-  // const modelPath = {{ (resources.Get "waifu/model/").Permalink }}
-
   // 加载资源并初始化
   if (screen.width >= 768) {
     Promise.all([
-      loadExternalResource(cssPath, "css"),
+      loadExternalResource(config.path.cssPath, "css"),
       loadExternalResource(config.path.live2dCorePath, "js"),
       loadExternalResource(config.path.live2dSdkPath, "js"),
       loadExternalResource(config.path.tipsJsPath, "js")
     ]).then(() => {
       initWidget({
-        waifuPath: tipsJsonPath,
+        waifuPath: config.path.tipsJsonPath,
         cdnPath: config.path.modelPath,
         tools: config.tools,
         dragEnable: config.drag.enable,
@@ -46,8 +44,8 @@
         let isDown = false;
         let waifuLeft;
         let mouseLeft;
-        let waifuTop;
-        let mouseTop;
+        // let waifuTop;
+        // let mouseTop;
         // 鼠标点击监听
         waifu.onmousedown = function (e) {
             isDown = true;
@@ -55,8 +53,8 @@
             waifuLeft = waifu.offsetLeft;
             mouseLeft = e.clientX;
             // 记录y轴
-            waifuTop = waifu.offsetTop;
-            mouseTop = e.clientY;
+            // waifuTop = waifu.offsetTop;
+            // mouseTop = e.clientY;
         }
         // 鼠标移动监听
         window.onmousemove = function (e) {
@@ -72,13 +70,13 @@
             }
             waifu.style.left = currentLeft  + "px";
             // y轴移动
-            let currentTop = waifuTop + (e.clientY - mouseTop);
-            if (currentTop < 30) {
-                currentTop = 30
-            } else if (currentTop > window.innerHeight - 290) {
-                currentTop = window.innerHeight - 290
-            }
-            waifu.style.top = currentTop + "px";
+            // let currentTop = waifuTop + (e.clientY - mouseTop);
+            // if (currentTop < 30) {
+            //     currentTop = 30
+            // } else if (currentTop > window.innerHeight - 290) {
+            //     currentTop = window.innerHeight - 290
+            // }
+            // waifu.style.top = currentTop + "px";
         }
         // 鼠标点击松开监听
         window.onmouseup = function (e) {
@@ -219,7 +217,7 @@
 <style>
     .highlight {
         /* 你可以根据需要调整这个高度 */
-        max-height: 40px;
+        max-height: 400px;
         overflow: hidden;
     }
 
