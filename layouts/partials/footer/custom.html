@@ -1,3 +1,40 @@
+<script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
+<script>
+    var pjax = new Pjax({
+        selectors: [
+            ".main-container",
+            ".js-Pjax"
+        ]
+    })
+</script>
+
+<script>
+  pjax._handleResponse = pjax.handleResponse;
+  pjax.handleResponse = function(responseText, request, href, options) {
+      if (request.responseText.match("<html")) {
+          if (responseText) {
+              // 将新页面的html字符串解析成DOM对象
+              let newDom = new DOMParser().parseFromString(responseText, 'text/html');
+              // 获取新页面中body的className，并设置回当前页面
+              let bodyClass = newDom.body.className;
+              document.body.setAttribute("class", bodyClass)
+          }
+          // 放行，交给pjax自己处理
+          pjax._handleResponse(responseText, request, href, options);
+      } else {
+          // handle non-HTML response here
+      }
+  }
+</script>
+
+<script>
+  document.addEventListener('pjax:complete', () => {
+      // Stack脚本初始化
+      window.Stack.init();
+  })
+</script>
+
+
 <script>
   const cdnPath = "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master";
   const cssPath = {{ (resources.Get "waifu/waifu.css").Permalink }};
@@ -314,3 +351,35 @@
   }
 </style>
 
+{{- with .Site.Params.comments.giscus -}}
+<div class="js-Pjax">
+<script>
+    (function () {
+        // 判断当前是否有文章评论标识
+        let comment = document.querySelector(".comment");
+        if (!comment) {
+            return
+        }
+        let script = document.createElement('script');
+        // 将对应评论的脚本内容填进去
+        script.setAttribute('src', 'https://giscus.app/client.js');
+        script.setAttribute('data-repo', '{{- .repo -}}');
+        script.setAttribute('data-repo-id', '{{- .repoID -}}');
+        script.setAttribute('data-category', '{{- .category -}}');
+        script.setAttribute('data-category-id', '{{- .categoryID -}}');
+        script.setAttribute('data-mapping', '{{- default `title` .mapping -}}');
+        script.setAttribute('data-strict', '{{- default 0 .strict -}}');
+        script.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
+        script.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
+        script.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
+        script.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
+        script.setAttribute('data-lang', '{{- default `en` .lang -}}');
+        script.setAttribute('data-loading', '{{- .loading -}}');
+        script.setAttribute('crossorigin', 'anonymous');
+        script.async = true;
+        // 寻找合适的元素，添加脚本进去(在页脚前将评论脚本插入)
+        document.querySelector('.site-footer').before(script)
+    })(document);
+</script>
+<div>
+{{- end -}}
