@@ -354,4 +354,4 @@ export {
     searchInit
 }
 
-// export default Search;
+export default Search;
