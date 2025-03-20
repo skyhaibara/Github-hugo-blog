@@ -16,10 +16,20 @@ links:
     website: https://github.com/VincentGarreau/particles.js
     image: particles-logo.png
 
-  - title: hugo-theme-stack
+  - title: Hugo-theme-stack
     description: Card-style Hugo theme designed for bloggers.
     website: https://github.com/CaiJimmy/hugo-theme-stack
     image: logo.png
+
+  - title: Hugo
+    description: A tool developed in Go language for generating static blog pages
+    website: https://gohugo.io/
+    image: hugo-logo.svg
+
+  - title: Markdown
+    description: A lightweight markup language for writing documents in plain text format
+    website: https://github.com/CaiJimmy/hugo-theme-stack
+    image: markdown.png
 
 menu:
     main: 

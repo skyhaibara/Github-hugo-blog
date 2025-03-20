@@ -203,10 +203,9 @@ menu:
           url: https://github.com/skyhaibara
           params:
               icon: brand-github
-
         - identifier: bilibili
           name: bilibili
-          url: https://bilibili.com
+          url: https://space.bilibili.com/40026657
           params:
               icon: bilibili
         - identifier: website
@@ -214,6 +213,12 @@ menu:
           url: https://www.skyhaibara.top
           params:
               icon: link
+        - identifier: 借鉴letere大佬的创作
+          name: 借鉴letere大佬的创作
+          url: https://letere-gzj.github.io/hugo-stack/
+          params:
+              icon: reference
+
 
 related:
     includeNewer: true

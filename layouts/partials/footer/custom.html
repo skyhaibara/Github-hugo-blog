@@ -1,3 +1,8 @@
+{{ with resources.Get "js/topbar.min.js" }}
+    <!-- 引入本地JS脚本 -->
+    <script src={{ .Permalink }}></script>
+{{ end }}
+
 <script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
 <script>
     var pjax = new Pjax({
@@ -25,15 +30,24 @@
           // handle non-HTML response here
       }
   }
-</script>
-
-<script>
+    // 修改进度条颜色
+  topbar.config({
+    barColors: {
+        '0': 'rgba(255,  255, 255, 1)',
+        '1.0': 'rgba(139, 0, 139, 0)'
+  })
+	
+  document.addEventListener('pjax:send', () => {
+      // 显示顶部进度条
+      topbar.show();
+  })
+  
   document.addEventListener('pjax:complete', () => {
       // Stack脚本初始化
       window.Stack.init();
+      topbar.hide();
   })
 </script>
-
 
 <script>
   const cdnPath = "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master";
@@ -145,7 +159,7 @@
 
 
 <style>
-	  @font-face {
+	@font-face {
     font-family: '⚪';
     src: url({{ (resources.Get "font/RawMarukoGothicCJKtc-Regular.ttf").Permalink }}) format('truetype');
   }
@@ -154,17 +168,14 @@
     --base-font-family: '⚪';
     --code-font-family: '⚪';
   }
-</style>
-
-<style>
-    #TableOfContents > ul, ol {
-        ul, ol {
-            display: none;
-        }
-        .open {
-            display: block;
-        }
-    }
+  #TableOfContents > ul, ol {
+      ul, ol {
+          display: none;
+      }
+      .open {
+          display: block;
+      }
+  }
 </style>
 
 <script>
@@ -240,10 +251,7 @@
             }
         };
     }
-
-    /**
-     * 返回顶部
-     */
+    
     function backToTop(){
         window.scrollTo({ top: 0, behavior: "smooth" })
     }
@@ -292,6 +300,13 @@
         width: 22px;
         height: 16px;
     }
+    #particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+  }
 </style>
 
 <script>
@@ -335,51 +350,43 @@
 <div id="particles-js"></div>
 
 <script src={{ (resources.Get "background/particles.min.js").Permalink }}></script>
+
 <script>
   particlesJS.load('particles-js', {{ (resources.Get "background/particlesjs-config.json").Permalink }}, function() {
     console.log('particles.js loaded - callback');
   });
 </script>
 
-<style>
-  #particles-js {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: -1;
-  }
-</style>
 
 {{- with .Site.Params.comments.giscus -}}
 <div class="js-Pjax">
-<script>
-    (function () {
-        // 判断当前是否有文章评论标识
-        let comment = document.querySelector(".comment");
-        if (!comment) {
-            return
-        }
-        let script = document.createElement('script');
-        // 将对应评论的脚本内容填进去
-        script.setAttribute('src', 'https://giscus.app/client.js');
-        script.setAttribute('data-repo', '{{- .repo -}}');
-        script.setAttribute('data-repo-id', '{{- .repoID -}}');
-        script.setAttribute('data-category', '{{- .category -}}');
-        script.setAttribute('data-category-id', '{{- .categoryID -}}');
-        script.setAttribute('data-mapping', '{{- default `title` .mapping -}}');
-        script.setAttribute('data-strict', '{{- default 0 .strict -}}');
-        script.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-        script.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
-        script.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
-        script.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
-        script.setAttribute('data-lang', '{{- default `en` .lang -}}');
-        script.setAttribute('data-loading', '{{- .loading -}}');
-        script.setAttribute('crossorigin', 'anonymous');
-        script.async = true;
-        // 寻找合适的元素，添加脚本进去(在页脚前将评论脚本插入)
-        document.querySelector('.site-footer').before(script)
-    })(document);
-</script>
+  <script>
+      (function () {
+          // 判断当前是否有文章评论标识
+          let comment = document.querySelector(".comment");
+          if (!comment) {
+              return
+          }
+          let script = document.createElement('script');
+          // 将对应评论的脚本内容填进去
+          script.setAttribute('src', 'https://giscus.app/client.js');
+          script.setAttribute('data-repo', '{{- .repo -}}');
+          script.setAttribute('data-repo-id', '{{- .repoID -}}');
+          script.setAttribute('data-category', '{{- .category -}}');
+          script.setAttribute('data-category-id', '{{- .categoryID -}}');
+          script.setAttribute('data-mapping', '{{- default `title` .mapping -}}');
+          script.setAttribute('data-strict', '{{- default 0 .strict -}}');
+          script.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
+          script.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
+          script.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
+          script.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
+          script.setAttribute('data-lang', '{{- default `en` .lang -}}');
+          script.setAttribute('data-loading', '{{- .loading -}}');
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          // 寻找合适的元素，添加脚本进去(在页脚前将评论脚本插入)
+          document.querySelector('.site-footer').before(script)
+      })(document);
+  </script>
 <div>
 {{- end -}}

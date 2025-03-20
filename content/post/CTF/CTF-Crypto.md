@@ -6,6 +6,21 @@ image = "Zs.png"
 +++
 
 zyt大佬捏：[horostal.github.io](horostal.github.io)
+## Pisano 周期
+
+2<sub>n+2</sub> = b * u<sub>n+1</sub> + c * u<sub>n</sub>
+
+```python
+#sage
+g = 17665922529512695488143524113273224470194093921285273353477875204196603230641896039854934719468650093602325707751568
+mod = 100000007
+R = BinaryRecurrenceSequence(6,1)
+#计算序列的周期
+cycle = R.period(mod)
+print(R(g%cycle)%mod)
+
+#output :41322239
+```
 ### Virgenene(维吉尼亚)
 
 取一个长度为$x$的$key$，则在每一个长度为$x$的明文区间内，每一个字母本身都在进行凯撒式移位加密。例如选取$key$为`vector`，则对应数字为`(21, 4, 2, 19, 14, 17)`，之后对明文进行加密：

@@ -1,8 +1,8 @@
 ---
-title: "Test"
+title: "归档"
 description: "This is an example category"
-slug: "test"
-image: "hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg"
+slug: "categories"
+image: "椿.png"
 style:
     background: "#2a9d8f"
     color: "#fff"
