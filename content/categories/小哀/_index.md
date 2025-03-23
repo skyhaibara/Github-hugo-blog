@@ -1,9 +1,9 @@
 ---
-title: "归档"
+title: "小哀"
 description: "This is an example category"
 slug: "categories"
-image: "椿.png"
+image: "ai.jpg"
 style:
-    background: "#2a9d8f"
+    background: "#A551B7FF"
     color: "#fff"
 ---

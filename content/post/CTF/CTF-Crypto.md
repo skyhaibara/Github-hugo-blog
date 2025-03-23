@@ -2,7 +2,7 @@
 date = 2025-03-13T18:00:00+08:00
 title = "CTF Crypto"
 image = "Zs.png"
-
+categories = ["CTF"]
 +++
 
 zyt大佬捏：[horostal.github.io](horostal.github.io)
