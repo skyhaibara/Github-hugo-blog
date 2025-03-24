@@ -4,6 +4,6 @@ description: "This is an example category"
 slug: "categories"
 image: "椿.png"
 style:
-    background: "#2a9d8f"
+    background: "#6981E1FF"
     color: "#fff"
 ---
