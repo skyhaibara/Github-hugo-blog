@@ -61,73 +61,75 @@ XXXXXXX
 
 - 省赛的题目复现，讲一下自己的理解
 
+## olevba 
+
+![](/CTF/Misc/22.webp)
+
 ## Code（编码）
 
 #### 猪圈密码：
 
-![](/CTF/2.png)
+![](/CTF/Misc/2.webp)
 
 - **多类变种**
 
-![](/CTF/1.png)
-
-![](/CTF/3.png)
+![](/CTF/Misc/2.webp)
 
 - #### 圣堂武士密码（猪圈密码的变种）：
 
-![](/CTF/5.png)
+![](/CTF/Misc/5.webp)
 
 #### 小猫密码：
 
-![](/CTF/1.jpg)
+![](/CTF/Misc/1.webp)
 
 #### 五笔密码：
 
-![](/CTF/4.png)
+![](/CTF/Misc/4.webp)
 
 #### 提瓦特大陆：
 
-![](/CTF/6.png)
+![](/CTF/Misc/6.webp)
 
 #### 古埃及象形文字：
 
-![](/CTF/7.png)
+![](/CTF/Misc/7.webp)
 
 #### 外星人密码：
 
-![](/CTF/8.png)
+![](/CTF/Misc/8.webp)
 
 #### 克林贡语密码《星际迷航》：
 
-![](/CTF/9.png)
+![](/CTF/Misc/9.webp)
 
 #### 元素周期表：
 
-![](/CTF/10.png)
+![](/CTF/Misc/10.webp)
 
 #### 狄德拉字符(暗精灵活神)：
 
-![](/CTF/11.png)
+![](/CTF/Misc/11.webp)
 
 #### 银河字母(游戏《指挥官基恩》)：
 
-![](/CTF/12.png)
+![](/CTF/Misc/12.webp)
 
 #### 跳舞的小人：
 
-![](/CTF/13.png)
+![](/CTF/Misc/13.webp)
 
 #### 旗语密码：
 
-![](/CTF/14.png)
+![](/CTF/Misc/14.webp)
 
 #### 国际船用信号旗：
 
-![](/CTF/16.png)
+![](/CTF/Misc/16.webp)
 
 #### 夏多密码（又称曲折密码）:
 
-![](/CTF/17.png)
+![](/CTF/Misc/17.webp)
 
 在以上所示的字母表密钥的底部，列有四个附加符号1，2，3，4.他们可以放在密文中的任何地方。每个附加符号指示，如何转动写有密文的纸张，再进行后续的加密或解密操作，直到出现另一个附加符号。
 可以把每个附加符号中的那根线看作是指示针，它指示了纸张的上端朝上，朝下，朝左，朝右。比如说：
@@ -138,19 +140,19 @@ XXXXXXX
 
 #### 多斯拉克语字母表：
 
-![](/CTF/18.png)
+![](/CTF/Misc/18.webp)
 
 #### 海利亚文字：
 
-![](/CTF/19.png)
+![](/CTF/Misc/19.webp)
 
 #### Covenant字体：
 
-![](/CTF/20.png)
+![](/CTF/Misc/20.webp)
 
 #### top cipher:
 
-![](/CTF/15.png)
+![](/CTF/Misc/15.webp)
 
 exp:
 
@@ -177,8 +179,10 @@ for i in s2:
             flag2 += cipherList3[rank]
 
 print(flag2)
-
 ```
+#### DTMF键盘
+
+![](/CTF/Misc/21.webp)
 
 ## Matlab -> Python
 
@@ -266,4 +270,3 @@ basecrack.py -m 自动化处理
 sekurlsa::minidump lsass.dmp --加载
 sekurlsa::logonpasswords full --导出密码散列值
 ```
-
