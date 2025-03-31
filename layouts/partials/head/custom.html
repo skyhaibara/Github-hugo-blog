@@ -1,110 +1,153 @@
 <div class="loading">
-    <div class="loader">
-        <div class="face">
-            <div class="circle"></div>
+    <div class="snow-loader">
+        <!-- 雪花数量优化为15个 -->
+        <div class="snow-flakes">
+            <span v-for="i in 15" :key="i" :style="`--i:${i}`"></span>
         </div>
-        <div class="face">
-            <div class="circle"></div>
-        </div>
+        <!-- 新增雪堆效果 -->
+        <div class="snow-pile"></div>
     </div>
 </div>
 
 <style>
-    .loading {
-        position: fixed;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        zoom: 3.0;
-        z-index: 99;
-        background-color: #000000;
-    }
-    .loader {
-        width: 6em;
-        height: 6em;
-        font-size: 10px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+/* 基础样式 */
+.loading {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(23, 34, 45, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+    transition: opacity 0.8s ease-out;
+}
 
-    .loader .face {
-        position: absolute;
-        border-radius: 50%;
-        border-style: solid;
-        animation: animate023845 3s linear infinite;
-    }
+/* 雪景容器 */
+.snow-loader {
+    position: relative;
+    width: 30vmin;
+    height: 80vmin;
+    max-width: 300px;
+    max-height: 600px;
+}
 
-    .animated-stop {
-        animation-play-state: paused !important;
-    }
-	
-    .scaleAndFadeout {
-        animation: scaleAndFadeOut 1.5s forwards;
-    }
+/* 雪花粒子系统 */
+.snow-flakes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 3px #fff);
+}
 
-    .loader .face:nth-child(1) {
-        width: 100%;
-        height: 100%;
-        color: gold;
-        border-color: currentColor transparent transparent currentColor;
-        border-width: 0.2em 0.2em 0em 0em;
-        --deg: -45deg;
-        animation-direction: normal;
-    }
+.snow-flakes span {
+    position: absolute;
+    top: -20px;
+    width: calc(3px + var(--i)*0.2px);
+    height: calc(3px + var(--i)*0.2px);
+    background: linear-gradient(white, #b0e0ff);
+    border-radius: 50%;
+    animation: snowfall calc(8s / var(--i)) linear infinite;
+    opacity: calc(0.8 - var(--i)*0.05);
+    left: calc(var(--i) * 5%);
+    transform-origin: bottom;
+}
 
-    .loader .face:nth-child(2) {
-        width: 70%;
-        height: 70%;
-        color: lime;
-        border-color: currentColor currentColor transparent transparent;
-        border-width: 0.2em 0em 0em 0.2em;
-        --deg: -135deg;
-        animation-direction: reverse;
-    }
+/* 雪堆效果 */
+.snow-pile {
+    position: absolute;
+    bottom: 0;
+    width: 120%;
+    height: 30px;
+    left: -10%;
+    background: linear-gradient(#f0f8ff, #b0e0ff);
+    border-radius: 50% / 100%;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+    animation: pile-grow 3s ease-out forwards;
+}
 
-    .loader .face .circle {
-        position: absolute;
-        width: 50%;
-        height: 0.1em;
-        top: 50%;
-        left: 50%;
-        background-color: transparent;
-        transform: rotate(var(--deg));
-        transform-origin: left;
+/* 雪花飘落动画 */
+@keyframes snowfall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
     }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: 
+            translateY(90vh) 
+            translateX(calc(var(--i)*10px - 50px))
+            rotate(1080deg);
+        opacity: 0;
+    }
+}
 
-    .loader .face .circle::before {
-        position: absolute;
-        top: -0.5em;
-        right: -0.5em;
-        content: '';
-        width: 1em;
-        height: 1em;
-        background-color: currentColor;
-        border-radius: 50%;
-        box-shadow: 0 0 2em,
-                    0 0 4em,
-                    0 0 6em,
-                    0 0 8em,
-                    0 0 10em,
-                    0 0 0 0.5em rgba(255, 255, 0, 0.1);
+/* 雪堆生长动画 */
+@keyframes pile-grow {
+    from {
+        height: 0;
+        filter: opacity(0);
     }
+    to {
+        height: 30px;
+        filter: opacity(1);
+    }
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+    .snow-loader {
+        width: 50vw;
+        height: 80vh;
+    }
+    
+    .snow-flakes span {
+        width: 2.5px;
+        height: 2.5px;
+    }
+}
+
+/* 加载完成动画 */
+.loading.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
 </style>
 
-<script>	
-    function initLoading() {
-        let loading = document.querySelector(".loading");
-        document.addEventListener('DOMContentLoaded', function() {
-            // 本地页面加载速度快，可自行使用setTimeout()来进行延迟，体验加载动画效果
-            loading.style.display = "none";
-        });
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const loading = document.querySelector('.loading');
+    const snowFlakes = document.querySelector('.snow-flakes');
+    
+    // 动态生成雪花（替代静态HTML）
+    const createSnow = () => {
+        let flakes = '';
+        for(let i = 0; i < 15; i++) {
+            flakes += `<span style="--i:${Math.random()*20 + 5}"></span>`;
+        }
+        snowFlakes.innerHTML = flakes;
+    }
+    
+    // 初始化
+    createSnow();
+    
+    // 自适应重置
+    window.addEventListener('resize', createSnow);
+
+    // 加载完成处理
+    const hideLoading = () => {
+        loading.classList.add('fade-out');
+        setTimeout(() => {
+            loading.remove();
+        }, 800);
     }
 
-    initLoading();
+    window.addEventListener('load', hideLoading);
+    setTimeout(hideLoading, 8000); // 8秒超时
+});
 </script>
