@@ -1,153 +1,142 @@
 <div class="loading">
-    <div class="snow-loader">
-        <!-- 雪花数量优化为15个 -->
-        <div class="snow-flakes">
-            <span v-for="i in 15" :key="i" :style="`--i:${i}`"></span>
+<!-- From Uiverse.io by mrhyddenn --> 
+    <div class="loader">
+        <div class="snow">
+            <span style="--i:11"></span>
+            <span style="--i:12"></span>
+            <span style="--i:15"></span>
+            <span style="--i:17"></span>
+            <span style="--i:18"></span>
+            <span style="--i:13"></span>
+            <span style="--i:14"></span>
+            <span style="--i:19"></span>
+            <span style="--i:20"></span>
+            <span style="--i:10"></span>
+            <span style="--i:18"></span>
+            <span style="--i:13"></span>
+            <span style="--i:14"></span>
+            <span style="--i:19"></span>
+            <span style="--i:20"></span>
+            <span style="--i:10"></span>
+            <span style="--i:18"></span>
+            <span style="--i:13"></span>
+            <span style="--i:14"></span>
+            <span style="--i:19"></span>
+            <span style="--i:20"></span>
+            <span style="--i:10"></span>
         </div>
-        <!-- 新增雪堆效果 -->
-        <div class="snow-pile"></div>
     </div>
 </div>
 
 <style>
-/* 基础样式 */
-.loading {
-    position: fixed;
-    top: 100px;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(23, 34, 45, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(2px);
-    transition: opacity 0.8s ease-out;
-}
-
-/* 雪景容器 */
-.snow-loader {
-    position: relative;
-    width: 30vmin;
-    height: 80vmin;
-    max-width: 300px;
-    max-height: 600px;
-}
-
-/* 雪花粒子系统 */
-.snow-flakes {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 3px #fff);
-}
-
-.snow-flakes span {
-    position: absolute;
-    top: -20px;
-    width: calc(3px + var(--i)*0.2px);
-    height: calc(3px + var(--i)*0.2px);
-    background: linear-gradient(white, #b0e0ff);
-    border-radius: 50%;
-    animation: snowfall calc(8s / var(--i)) linear infinite;
-    opacity: calc(0.8 - var(--i)*0.05);
-    left: calc(var(--i) * 5%);
-    transform-origin: bottom;
-}
-
-/* 雪堆效果 */
-.snow-pile {
-    position: absolute;
-    bottom: 0;
-    width: 120%;
-    height: 30px;
-    left: -10%;
-    background: linear-gradient(#f0f8ff, #b0e0ff);
-    border-radius: 50% / 100%;
-    clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
-    animation: pile-grow 3s ease-out forwards;
-}
-
-/* 雪花飘落动画 */
-@keyframes snowfall {
-    0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.8;
+    .loading {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 99;
+        zoom: 3.0;
+        background-color: #303030;
     }
-    90% {
-        opacity: 0.6;
+    .animated-stop {
+        animation-play-state: paused !important;
     }
-    100% {
-        transform: 
-            translateY(90vh) 
-            translateX(calc(var(--i)*10px - 50px))
-            rotate(1080deg);
-        opacity: 0;
+	
+    .scaleAndFadeout {
+        animation: scaleAndFadeOut 1.5s forwards;
     }
+
+    @keyframes scaleAndFadeOut {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+    }
+
+/* From Uiverse.io by mrhyddenn */ 
+.loader {
+  position: relative;
+  width: 110px;
+  height: 30px;
+  background: #fff;
+  border-radius: 100px;
 }
 
-/* 雪堆生长动画 */
-@keyframes pile-grow {
-    from {
-        height: 0;
-        filter: opacity(0);
-    }
-    to {
-        height: 30px;
-        filter: opacity(1);
-    }
+.loader::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 40px 0 0 20px #fff;
 }
 
-/* 响应式适配 */
-@media (max-width: 768px) {
-    .snow-loader {
-        width: 50vw;
-        height: 80vh;
-    }
-    
-    .snow-flakes span {
-        width: 2.5px;
-        height: 2.5px;
-    }
+.snow {
+  position: relative;
+  display: flex;
+  z-index: 1;
 }
 
-/* 加载完成动画 */
-.loading.fade-out {
-    opacity: 0;
-    pointer-events: none;
+.snow span {
+  position: relative;
+  width: 3px;
+  height: 3px;
+  background: #fff;
+  margin: 0 2px;
+  border-radius: 50%;
+  animation: snowing 5s linear infinite;
+  animation-duration: calc(15s / var(--i));
+  transform-origin: bottom;
+}
+
+@keyframes snowing {
+  0% {
+    transform: translateY(0px);
+  }
+
+  70% {
+    transform: translateY(100px) scale(1);
+  }
+
+  100% {
+    transform: translateY(100px) scale(0);
+  }
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const loading = document.querySelector('.loading');
-    const snowFlakes = document.querySelector('.snow-flakes');
-    
-    // 动态生成雪花（替代静态HTML）
-    const createSnow = () => {
-        let flakes = '';
-        for(let i = 0; i < 15; i++) {
-            flakes += `<span style="--i:${Math.random()*20 + 5}"></span>`;
-        }
-        snowFlakes.innerHTML = flakes;
+<script>	
+    function initLoading() {
+        let loading = document.querySelector(".loading");
+        document.addEventListener('DOMContentLoaded', function() {
+            // 本地页面加载速度快，可自行使用setTimeout()来进行延迟，体验加载动画效果
+            // 执行加载完成动画
+            loadFinish();
+            // 延迟1.5s，待加载完成动画执行结束
+            setTimeout(() => {
+                loading.style.display = "none";
+            }, 1500)
+        });
     }
-    
-    // 初始化
-    createSnow();
-    
-    // 自适应重置
-    window.addEventListener('resize', createSnow);
-
-    // 加载完成处理
-    const hideLoading = () => {
-        loading.classList.add('fade-out');
-        setTimeout(() => {
-            loading.remove();
-        }, 800);
+	
+    function loadFinish() {
+        // 暂停动画
+        let sharingon= document.querySelector(".loader");
+        sharingon.classList.add("animated-stop")
+        // 放大并渐变到透明
+        let loading = document.querySelector(".loading");
+        loading.classList.add("scaleAndFadeout")
     }
-
-    window.addEventListener('load', hideLoading);
-    setTimeout(hideLoading, 8000); // 8秒超时
-});
+	
+    initLoading();
 </script>
