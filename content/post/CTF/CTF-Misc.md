@@ -1,7 +1,7 @@
 +++
 date = 2025-03-06T18:00:00+08:00
 title = "CTF Misc"
-image = "Mc.png"
+image = "Cover/Mc.webp"
 categories = ["CTF"]
 +++
 

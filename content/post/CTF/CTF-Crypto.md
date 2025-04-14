@@ -1,7 +1,7 @@
 +++
 date = 2025-03-13T18:00:00+08:00
 title = "CTF Crypto"
-image = "Zs.png"
+image = "Cover/Zs.webp"
 categories = ["CTF"]
 +++
 
