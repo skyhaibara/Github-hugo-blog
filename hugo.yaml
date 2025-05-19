@@ -65,7 +65,7 @@ params:
         toc: true
         readingTime: false
         license:
-            enabled: true
+            enabled: false
             default: 根据CC BY-NC-SA 4.0协议授权
 
     comments:
@@ -207,7 +207,7 @@ menu:
           name: bilibili
           url: https://space.bilibili.com/40026657
           params:
-              icon: bilibili
+              icon: brand-bilibili
         - identifier: website
           name: website
           url: https://www.skyhaibara.top
@@ -217,7 +217,7 @@ menu:
           name: 借鉴letere大佬的创作
           url: https://letere-gzj.github.io/hugo-stack/
           params:
-              icon: reference
+              icon: link-plus
 
 
 related:

@@ -29,6 +29,7 @@ params:
 
     article:
         headingAnchor: false
+        wordCount: true
         math: false
         toc: true
         readingTime: true
