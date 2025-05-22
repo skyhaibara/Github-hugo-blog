@@ -353,5 +353,3 @@ function searchInit() {
 export {
     searchInit
 }
-
-export default Search;

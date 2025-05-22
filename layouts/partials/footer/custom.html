@@ -1,39 +1,39 @@
+<!-- 【custom.html】 -->
 <script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
-
 <script>
     var pjax = new Pjax({
         selectors: [
-            ".main-container",
-            ".js-Pjax"
+            ".main-container"
         ]
     })
 </script>
 
 <script>
-  pjax._handleResponse = pjax.handleResponse;
-  pjax.handleResponse = function(responseText, request, href, options) {
-      if (request.responseText.match("<html")) {
-          if (responseText) {
-              // 将新页面的html字符串解析成DOM对象
-              let newDom = new DOMParser().parseFromString(responseText, 'text/html');
-              // 获取新页面中body的className，并设置回当前页面
-              let bodyClass = newDom.body.className;
-              document.body.setAttribute("class", bodyClass)
-          }
-          // 放行，交给pjax自己处理
-          pjax._handleResponse(responseText, request, href, options);
-      } else {
-          // handle non-HTML response here
-      }
-  }
+    pjax._handleResponse = pjax.handleResponse;
+    pjax.handleResponse = function(responseText, request, href, options) {
+        if (request.responseText.match("<html")) {
+            if (responseText) {
+                // 将新页面的html字符串解析成DOM对象
+                let newDom = new DOMParser().parseFromString(responseText, 'text/html');
+                // 获取新页面中body的className，并设置回当前页面
+                let bodyClass = newDom.body.className;
+                document.body.setAttribute("class", bodyClass)
+            }
+            // 放行，交给pjax自己处理
+            pjax._handleResponse(responseText, request, href, options);
+        } else {
+            // handle non-HTML response here
+        }
+    }
 </script>
 
 <script>
-  document.addEventListener('pjax:complete', () => {
-      // Stack脚本初始化
-      window.Stack.init();
-  })
+    document.addEventListener('pjax:complete', () => {
+        // Stack脚本初始化
+        window.Stack.init();
+    })
 </script>
+
 
 <script>
   const cdnPath = "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master";
@@ -152,6 +152,9 @@
     --base-font-family: '⚪';
     --code-font-family: '⚪';
   }
+</style>
+
+<style>
   #TableOfContents > ul, ol {
       ul, ol {
           display: none;
@@ -256,7 +259,7 @@
 
     .code-more-box {
         width: 100%;
-        padding-top: 78px;
+        padding-top: 12px;
         background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
         position: absolute;
         left: 0;
