@@ -60,11 +60,6 @@ html{
   // 全局字体大小
   --article-font-size: 1.8rem;
   --emphasize-text-color: #9e8f9f; // Add emphasize font color
-  // // 行内代码背景色
-  // --code-background-color: #f8f8f8;
-  // // 行内代码前景色
-  // --code-text-color: #e96900;
-  // 暗色模式下样式
   &[data-scheme="dark"] {
     // 背景色
     --body-background: #000000;
@@ -361,11 +356,9 @@ a {
   transform: rotate(360deg); // 旋转角度为360度
 }
 
-// 文章列表链接的旋转动画
 .sidebar .menu-social li svg{
   transition: transform 1s ease-in-out; // 旋转时间
 }
 .sidebar .menu-social li svg:hover {
   transform: scale(1.5) rotate(360deg); // 旋转角度为360度
 }
-

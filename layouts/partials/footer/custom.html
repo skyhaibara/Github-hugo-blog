@@ -143,15 +143,24 @@
 
 
 <style>
-	@font-face {
-    font-family: '⚪';
-    src: url({{ (resources.Get "font/RawMarukoGothicCJKtc-Regular.woff2").Permalink }}) format('woff2');
-  }
+    /* 引入中文字体 */
+    @font-face {
+        font-family: 'CNFont';
+        src: url('font/RawMarukoGothicCJKtc-Regular') format('woff2');
+        font-display: swap;
+    }
 
-  :root {
-    --base-font-family: '⚪';
-    --code-font-family: '⚪';
-  }
+    /* 引入代码字体 */
+    @font-face {
+        font-family: 'CodeFont';
+        src: url('font/JetBrainsMono-Light') format('woff2');
+        font-display: swap;
+    }
+
+    :root {
+        --base-font-family: 'CNFont', sans-serif;
+        --code-font-family: 'CodeFont', monospace;
+    }
 </style>
 
 <style>
