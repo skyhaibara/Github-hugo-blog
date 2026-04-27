@@ -153,7 +153,7 @@
     /* 引入代码字体 */
     @font-face {
         font-family: 'CodeFont';
-        src: url('font/JetBrainsMono-Light') format('woff2');
+        src: url('font/JetBrainsMono-ExtraBold') format('woff2');
         font-display: swap;
     }
 
@@ -256,92 +256,114 @@
 </script>
 
 <style>
-    .highlight {
-        /* 你可以根据需要调整这个高度 */
-        max-height: 400px;
-        overflow: hidden;
-    }
+/* 代码块容器：默认折叠，但带平滑动画 */
+.highlight {
+    max-height: 200px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height .35s ease;
+}
 
-    .code-show {
-        max-height: none !important;
-    }
+/* 展开状态：自然展开，不硬切 */
+.highlight.code-show {
+    max-height: 2000px; /* 防止高度过大，但足够展开 */
+}
 
-    .code-more-box {
-        width: 100%;
-        padding-top: 12px;
-        background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(#fff));
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1;
-    }
+/* 渐隐区域：主题自适应 */
+.code-more-box {
+    width: 100%;
+    padding-top: 36px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity .3s ease;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0),
+        var(--body-background)
+    );
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+}
 
-    .code-more-btn {
-        display: block;
-        margin: auto;
-        width: 44px;
-        height: 22px;
-        background: #f0f0f5;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        padding-top: 6px;
-        cursor: pointer;
-    }
+/* 按钮 */
+.code-more-btn {
+    width: 48px;
+    height: 28px;
+    background: var(--card-background);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    transition: all .25s ease;
+}
 
-    .code-more-img {
-        cursor: pointer !important;
-        display: block;
-        margin: auto;
-        width: 22px;
-        height: 16px;
-    }
-    #particles-js {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: -1;
-  }
+.code-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-l1);
+}
+
+/* 图片 */
+.code-more-img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* 动画结束 */
+.code-more-box.hide {
+    opacity: 0;
+    pointer-events: none;
+}
 </style>
 
 <script>
-  function initCodeMoreBox() {
-    let codeBlocks = document.querySelectorAll(".highlight");
-    if (!codeBlocks) {
-      return;
-    }
-    codeBlocks.forEach(codeBlock => {
-      // 校验是否overflow
-      if (codeBlock.scrollHeight <= codeBlock.clientHeight) {
-        return;
-      }
-      // 元素初始化
-      // codeMoreBox
-      let codeMoreBox = document.createElement('div');
-      codeMoreBox.classList.add('code-more-box');
-      // codeMoreBtn
-      let codeMoreBtn = document.createElement('span');
-      codeMoreBtn.classList.add('code-more-btn');
-      codeMoreBtn.addEventListener('click', () => {
-        codeBlock.classList.add('code-show');
-        codeMoreBox.style.display = 'none';
-        // 触发resize事件，重新计算目录位置
-        window.dispatchEvent(new Event('resize'))
-      })
-      // img
-      let img = document.createElement('img');
-      img.classList.add('code-more-img');
-      img.src = {{ (resources.Get "icons/codeMore.webp").Permalink }}
-      // 元素添加
-      codeMoreBtn.appendChild(img);
-      codeMoreBox.appendChild(codeMoreBtn);
-      codeBlock.appendChild(codeMoreBox)
-    })
-  }
-  
-  initCodeMoreBox();
+function initCodeMoreBox() {
+    const codeBlocks = document.querySelectorAll(".highlight");
+
+    codeBlocks.forEach(block => {
+        // 内容不够长，不需要折叠
+        if (block.scrollHeight <= 400) return;
+
+        // 避免重复初始化
+        if (block.classList.contains("code-more-init")) return;
+        block.classList.add("code-more-init");
+
+        // 展开盒子
+        const moreBox = document.createElement("div");
+        moreBox.className = "code-more-box";
+
+        // 按钮
+        const btn = document.createElement("div");
+        btn.className = "code-more-btn";
+
+        // 图标
+        const img = document.createElement("img");
+        img.className = "code-more-img";
+        img.src = {{ (resources.Get "icons/codeMore.webp").Permalink }};
+
+        btn.appendChild(img);
+        moreBox.appendChild(btn);
+        block.appendChild(moreBox);
+
+        // 点击事件
+        btn.addEventListener("click", () => {
+            block.classList.add("code-show");
+            moreBox.classList.add("hide");
+
+            // 重新计算目录位置（Stack主题逻辑）
+            window.dispatchEvent(new Event('resize'));
+        });
+    });
+}
+
+// 等待 DOM 完全渲染（防止抢 highlight.js 的时机）
+document.addEventListener("DOMContentLoaded", initCodeMoreBox);
 </script>
+
 
 <div id="particles-js"></div>
 

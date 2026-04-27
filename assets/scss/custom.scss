@@ -71,14 +71,6 @@ html{
   }
 }
 //------------------------------------------------------
-// 修复引用块内容窄页面显示问题
-a {
-  word-break: break-all;
-}
-
-code {
-  word-break: break-all;
-}
 
 // 文章内容图片圆角阴影
 .article-page .main-article .article-content {
@@ -101,7 +93,6 @@ code {
 // 代码块基础样式修改
 .highlight {
   max-width: 102% !important;
-  background-color: var(--pre-background-color);
   padding: var(--card-padding);
   position: relative;
   border-radius: 20px;
@@ -157,6 +148,7 @@ code {
 }
 
 a {
+  word-break: break-all;
   text-decoration: none;
   color: var(--accent-color);
 
@@ -361,4 +353,32 @@ a {
 }
 .sidebar .menu-social li svg:hover {
   transform: scale(1.5) rotate(360deg); // 旋转角度为360度
+}
+
+.article-content .highlight pre code {
+  display: block;
+  min-width: 100%;
+  line-height: 1.75em;
+}
+
+#main-menu > li:nth-child(1) > a > span {
+    font-weight: bold;
+    font-size: 17px;
+}
+
+#main-menu > li > a > svg {
+    transition: transform .25s ease, margin .25s ease;
+}
+
+#main-menu > li:hover > a > svg {
+    margin-left: 6px;       /* 右移：最简单方式 */
+    transform: scale(1.08);  /* 抵消一点放大，使外观更自然 */
+}
+
+#main-menu > li > a {        /* 防止放大造成抖动 */
+    transition: transform .25s ease;
+}
+
+#main-menu > li:hover > a{
+    transform: scale(1.15);       /* 放大 15% 可自行调整 */
 }
