@@ -112,7 +112,6 @@ html{
   }
 
   pre {
-    margin: initial;
     padding: 0;
     margin: 0;
     width: auto;
@@ -361,24 +360,41 @@ a {
   line-height: 1.75em;
 }
 
+#main-menu {
+    gap: 16px;
+}
+
 #main-menu > li:nth-child(1) > a > span {
     font-weight: bold;
     font-size: 17px;
 }
 
 #main-menu > li > a > svg {
-    transition: transform .25s ease, margin .25s ease;
-}
-
-#main-menu > li:hover > a > svg {
-    margin-left: 6px;       /* 右移：最简单方式 */
-    transform: scale(1.08);  /* 抵消一点放大，使外观更自然 */
-}
-
-#main-menu > li > a {        /* 防止放大造成抖动 */
     transition: transform .25s ease;
 }
 
-#main-menu > li:hover > a{
-    transform: scale(1.15);       /* 放大 15% 可自行调整 */
+#main-menu > li:hover > a > svg {
+    transform: scale(1.1);
+}
+
+#main-menu > li > a {
+    transition: transform .25s ease;
+}
+
+#main-menu > li:hover > a {
+    transform: translateX(8px);
+}
+
+.left-sidebar {
+    --sidebar-element-separation: 12px;
+    z-index: 10;
+}
+
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }

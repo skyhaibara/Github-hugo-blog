@@ -2,9 +2,8 @@
 <script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script>
 <script>
     var pjax = new Pjax({
-        selectors: [
-            ".main-container"
-        ]
+        selectors: [".main-container"],
+        cacheBust: false
     })
 </script>
 
@@ -27,12 +26,6 @@
     }
 </script>
 
-<script>
-    document.addEventListener('pjax:complete', () => {
-        // Stack脚本初始化
-        window.Stack.init();
-    })
-</script>
 
 
 <script>
@@ -74,51 +67,6 @@
       });
     });
   }
-  function initWaifuMouseEvent() {
-        const waifu = document.getElementById("waifu");
-        let isDown = false;
-        let waifuLeft;
-        let mouseLeft;
-        // let waifuTop;
-        // let mouseTop;
-        // 鼠标点击监听
-        waifu.onmousedown = function (e) {
-            isDown = true;
-            // 记录x轴
-            waifuLeft = waifu.offsetLeft;
-            mouseLeft = e.clientX;
-            // 记录y轴
-            // waifuTop = waifu.offsetTop;
-            // mouseTop = e.clientY;
-        }
-        // 鼠标移动监听
-        window.onmousemove = function (e) {
-            if (!isDown) {
-                return;
-            }
-            // x轴移动
-            let currentLeft = waifuLeft + (e.clientX - mouseLeft);
-            if (currentLeft < 0) {
-                currentLeft = 0;
-            } else if (currentLeft > window.innerWidth - 300) {
-                currentLeft = window.innerWidth - 300;
-            }
-            waifu.style.left = currentLeft  + "px";
-            // y轴移动
-            // let currentTop = waifuTop + (e.clientY - mouseTop);
-            // if (currentTop < 30) {
-            //     currentTop = 30
-            // } else if (currentTop > window.innerHeight - 290) {
-            //     currentTop = window.innerHeight - 290
-            // }
-            // waifu.style.top = currentTop + "px";
-        }
-        // 鼠标点击松开监听
-        window.onmouseup = function (e) {
-            isDown = false;
-        }
-    }
-
   // 异步加载资源
   function loadExternalResource(url, type) {
     return new Promise((resolve, reject) => {
@@ -238,14 +186,14 @@
         btn.onclick = backToTop
         rightSideBar.appendChild(btn)
         // 滚动监听
-        window.onscroll = function() {
+        window.addEventListener('scroll', function() {
             // 当网页向下滑动 20px 出现"返回顶部" 按钮
             if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
                 btn.style.display = "block";
             } else {
                 btn.style.display = "none";
             }
-        };
+        });
     }
 
     function backToTop(){
@@ -370,9 +318,7 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
 <script src={{ (resources.Get "background/particles.min.js").Permalink }}></script>
 
 <script>
-  particlesJS.load('particles-js', {{ (resources.Get "background/particlesjs-config.json").Permalink }}, function() {
-    console.log('particles.js loaded - callback');
-  });
+  particlesJS.load('particles-js', {{ (resources.Get "background/particlesjs-config.json").Permalink }});
 </script>
 
 
@@ -406,7 +352,7 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
           document.querySelector('.site-footer').before(script)
       })(document);
   </script>
-<div>
+</div>
 {{- end -}}
 
 {{ with resources.Get "js/topbar.min.js" }}
@@ -455,6 +401,7 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
     }
 
     document.addEventListener('pjax:complete', () => {
+        window.Stack.init();
         renderKaTeX();
         topbar.hide();
     })
@@ -466,7 +413,7 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
   function showHideView() {
       // 判断是否存在vercount标签
       let viewCounts = document.querySelectorAll("#viewCount");
-      if (viewCounts) {
+      if (viewCounts.length > 0) {
           // 判断是否为文章页
           let article =  document.querySelector(".article-page");
           if (!article) {
