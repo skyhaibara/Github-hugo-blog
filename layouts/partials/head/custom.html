@@ -1,3 +1,20 @@
+{{/* 预加载关键资源 */}}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" as="script">
+{{ with resources.Get "js/topbar.min.js" }}
+<link rel="preload" href="{{ .Permalink }}" as="script">
+{{ end }}
+{{ with resources.Get "background/particles.min.js" }}
+<link rel="preload" href="{{ .Permalink }}" as="script">
+{{ end }}
+{{ with resources.Get "font/RawMarukoGothicCJKtc-Regular.woff2" }}
+<link rel="preload" href="{{ .Permalink }}" as="font" type="font/woff2" crossorigin>
+{{ end }}
+{{ with resources.Get "font/JetBrainsMono-ExtraBold.woff2" }}
+<link rel="preload" href="{{ .Permalink }}" as="font" type="font/woff2" crossorigin>
+{{ end }}
+
 <div class="loading">
     <div class="loader-rose">
         <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">

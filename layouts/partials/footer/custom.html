@@ -29,63 +29,104 @@
 
 
 <script>
-  const cdnPath = "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master";
+  // 多 CDN fallback,按顺序尝试,任一可用即使用其作为 modelPath
+  const cdnBases = [
+    "https://pub-fb5f542427074d66a4742ed7d0fcb694.r2.dev/live2d-widget-skyhaibara",
+    "https://fastly.jsdelivr.net/gh/skyhaibara/hugo-live2d@master",
+    "https://cdn.jsdelivr.net/gh/skyhaibara/hugo-live2d@master",
+    "https://gcore.jsdelivr.net/gh/skyhaibara/hugo-live2d@master"
+  ];
   const cssPath = {{ (resources.Get "waifu/waifu.css").Permalink }};
   const tipsJsonPath = {{ (resources.Get "waifu/waifu-tips.json").Permalink }};
-  const config = {
-    // 资源路径
-    path: {
-      homePath: "/",
-      modelPath: cdnPath + "/Resources/",
-      tipsJsPath: cdnPath + "/waifu-tips.js",
-      live2dCorePath: cdnPath + "/Core/live2dcubismcore.js",
-      live2dSdkPath: cdnPath + "/live2d-sdk.js"
-    },
-    // 工具栏
-    tools: ["hitokoto", "express", "switch-model", "photo" , "info", "quit"],
-    // 模型拖拽
-    drag: {
-      enable: true,
-      direction: ["x"]
-    },
+  const WAIFU_POS_KEY = "waifu-pos";
+
+  let activeCdnBase = cdnBases[0];
+
+  function loadExternalResource(url, type) {
+    return new Promise((resolve, reject) => {
+      const tag = type === "css"
+        ? Object.assign(document.createElement("link"), { rel: "stylesheet", href: url })
+        : Object.assign(document.createElement("script"), { src: url });
+      tag.onload = () => resolve(url);
+      tag.onerror = () => reject(url);
+      document.head.appendChild(tag);
+    });
   }
-  // 加载资源并初始化
+
+  function loadWithFallback(pathSuffix, type) {
+    return new Promise((resolve, reject) => {
+      const tryAt = (i) => {
+        if (i >= cdnBases.length) return reject(new Error("all CDNs failed: " + pathSuffix));
+        loadExternalResource(cdnBases[i] + pathSuffix, type)
+          .then(u => { activeCdnBase = cdnBases[i]; resolve(u); })
+          .catch(() => tryAt(i + 1));
+      };
+      tryAt(0);
+    });
+  }
+
   if (screen.width >= 768) {
     Promise.all([
       loadExternalResource(cssPath, "css"),
-      loadExternalResource(config.path.live2dCorePath, "js"),
-      loadExternalResource(config.path.live2dSdkPath, "js"),
-      loadExternalResource(config.path.tipsJsPath, "js")
+      loadWithFallback("/Core/live2dcubismcore.js", "js"),
+      loadWithFallback("/live2d-sdk.js", "js"),
+      loadWithFallback("/waifu-tips.js", "js")
     ]).then(() => {
       initWidget({
         waifuPath: tipsJsonPath,
-        cdnPath: config.path.modelPath,
-        tools: config.tools,
-        dragEnable: config.drag.enable,
-        dragDirection: config.drag.direction,
-        switchType: config.switchType
+        cdnPath: activeCdnBase + "/Resources/",
+        tools: ["hitokoto", "express", "switch-model", "photo", "info", "quit"],
+        dragEnable: true,
+        dragDirection: ["y"]
       });
-    });
+      bindWaifuPosition();
+    }).catch(err => console.warn("[live2d] init failed:", err));
   }
-  // 异步加载资源
-  function loadExternalResource(url, type) {
-    return new Promise((resolve, reject) => {
-      let tag;
-      if (type === "css") {
-        tag = document.createElement("link");
-        tag.rel = "stylesheet";
-        tag.href = url;
+
+  function bindWaifuPosition() {
+    let tries = 0;
+    const wait = setInterval(() => {
+      const waifu = document.getElementById("waifu");
+      if (waifu) {
+        clearInterval(wait);
+        setupWaifuPosition(waifu);
+      } else if (++tries > 100) {
+        clearInterval(wait);
       }
-      else if (type === "js") {
-        tag = document.createElement("script");
-        tag.src = url;
+    }, 100);
+  }
+
+  function setupWaifuPosition(waifu) {
+    // 仅在初次加载时恢复位置(并 clamp 到当前视口),之后让上游库自己处理拖拽
+    try {
+      const saved = JSON.parse(localStorage.getItem(WAIFU_POS_KEY) || "null");
+      if (saved && Number.isFinite(saved.left) && Number.isFinite(saved.top)) {
+        const w = 300, h = 300;
+        const left = Math.min(Math.max(0, saved.left), Math.max(0, window.innerWidth - w));
+        const top = Math.min(Math.max(0, saved.top), Math.max(0, window.innerHeight - h));
+        waifu.style.left = left + "px";
+        waifu.style.top = top + "px";
       }
-      if (tag) {
-        tag.onload = () => resolve(url);
-        tag.onerror = () => reject(url);
-        document.head.appendChild(tag);
+    } catch (e) {}
+
+    // 拖完只记录,不重新设置位置 — 避免和库的 offsetLeft/Top 读写冲突
+    let dragging = false;
+    const onDown = (e) => {
+      if (e.target.closest && e.target.closest("#waifu")) dragging = true;
+    };
+    const onUp = () => {
+      if (!dragging) return;
+      dragging = false;
+      const left = parseFloat(waifu.style.left);
+      const top = parseFloat(waifu.style.top);
+      if (Number.isFinite(left) && Number.isFinite(top)) {
+        try { localStorage.setItem(WAIFU_POS_KEY, JSON.stringify({ left, top })); } catch (e) {}
       }
-    });
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("mouseup", onUp);
+    document.addEventListener("touchstart", onDown, { passive: true });
+    document.addEventListener("touchend", onUp);
   }
 </script>
 
@@ -94,14 +135,14 @@
     /* 引入中文字体 */
     @font-face {
         font-family: 'CNFont';
-        src: url('font/RawMarukoGothicCJKtc-Regular') format('woff2');
+        src: url("{{ (resources.Get "font/RawMarukoGothicCJKtc-Regular.woff2").Permalink }}") format('woff2');
         font-display: swap;
     }
 
     /* 引入代码字体 */
     @font-face {
         font-family: 'CodeFont';
-        src: url('font/JetBrainsMono-ExtraBold') format('woff2');
+        src: url("{{ (resources.Get "font/JetBrainsMono-ExtraBold.woff2").Permalink }}") format('woff2');
         font-display: swap;
     }
 
@@ -204,17 +245,17 @@
 </script>
 
 <style>
-/* 代码块容器：默认折叠，但带平滑动画 */
+/* 代码块容器：默认折叠 */
 .highlight {
-    max-height: 200px;
+    height: 200px;
     overflow: hidden;
     position: relative;
-    transition: max-height .35s ease;
+    transition: height .35s ease;
 }
 
-/* 展开状态：自然展开，不硬切 */
+/* 展开状态：高度由 JS 写入精确值 */
 .highlight.code-show {
-    max-height: 2000px; /* 防止高度过大，但足够展开 */
+    height: auto;
 }
 
 /* 渐隐区域：主题自适应 */
@@ -246,7 +287,7 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    transition: all .25s ease;
+    transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .code-more-btn:hover {
@@ -297,13 +338,16 @@ function initCodeMoreBox() {
         moreBox.appendChild(btn);
         block.appendChild(moreBox);
 
-        // 点击事件
+        // 点击事件：先写入精确目标高度再触发 transition，结束后改为 auto
         btn.addEventListener("click", () => {
-            block.classList.add("code-show");
+            const target = block.scrollHeight;
+            block.style.height = target + 'px';
             moreBox.classList.add("hide");
-
-            // 重新计算目录位置（Stack主题逻辑）
-            window.dispatchEvent(new Event('resize'));
+            block.addEventListener('transitionend', () => {
+                block.classList.add("code-show");
+                block.style.height = '';
+                window.dispatchEvent(new Event('resize'));
+            }, { once: true });
         });
     });
 }
