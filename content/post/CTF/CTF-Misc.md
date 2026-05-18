@@ -8,154 +8,199 @@ weight = 1
 
 # Misc
 
-## Kali（Linux系统）
+## Kali(Linux 系统)
 
 ### extundelete
 
+从 ext 文件系统的磁盘/分区镜像中**恢复被删除的文件**。CTF 里经常给一个 `.img` 镜像,要求挂载后用 extundelete 把删除项恢复出来再看图。
+
 ```bash
-# 在linux上挂载光盘的命令
+# 在 linux 上挂载光盘的命令
 mkdir /mnt/disk
 mount attachment.img /mnt/disk/
 cd /mnt/disk 
-#可以使用 eog 图片名 命令来查看图片
-#使用结束后用 
-umount: /mnt/disk 
-#命令取消挂载
+# 可以使用 eog 图片名 命令来查看图片
+# 使用结束后用 
+umount /mnt/disk 
+# 命令取消挂载
 extundelete --restore-all attachment.img
 # 数据恢复成功后会生成一个 RECOVERED_FILES 文件
 ```
 
 ### 压缩包套娃
 
+题目把 flag 包在 N 层压缩包里(`.tar.xz` 套 `.tar.xz` 套 ...),手动解到吐血。这个一行命令循环解压,解完即删,直到没有 `.tar.xz` 为止:
+
 ```bash
 while [ "find . -type f -name '*.tar.xz' | wc -l" -gt 0 ]; do find -type f -name "*.tar.xz" -exec tar xf '{}' \; -exec rm -- '{}' \;; done;
-strings flag 查找flag字符
+strings flag        # 查找 flag 字符
 ```
 
-### LSB（老色比）
+### LSB(老色比)
+
+LSB Stego 的谐音梗 —— **L**east **S**ignificant **B**it,最低有效位隐写。用 `zsteg` 工具按指定通道顺序提取 PNG 中藏的数据:
 
 ```bash
 zsteg -e "b8,rgb,lsb,xy" 1.png > diskimage.dat
-
-testdisk : testdisk diskimage.dat
-
- C to copy the selected files, c to copy the current file  
 ```
 
-## Traffic（流量）
+## Traffic(流量)
 
 ### SMTP
 
+邮件传输协议,流量分析里**能从 PCAP 还原邮件正文、附件、登录凭据**。Wireshark 跟踪 SMTP 流可以直接看到 `MAIL FROM`、`RCPT TO`、`DATA` 阶段的明文,base64 附件也能提取出来。
+
 ### TLS
+
+加密流量,**需要私钥或 (Pre)-Master-Secret 才能解密**。题目通常把 RSA 私钥放在附件里,Wireshark → Edit → Preferences → Protocols → TLS → RSA keys list 配置后,加密包就会自动还原成明文。
 
 ```RSA
 -----BEGIN RSA PRIVATE KEY-----
 
-XXXXXXX
+XXXXXXX 标志类型
 
 -----END RSA PRIVATE KEY-----
 ```
 
 - wireshark 编辑即可
 
-### **SMB**+hascat
+### SMB + hashcat
 
-- 省赛的题目复现，讲一下自己的理解
+SMB 文件共享协议,流量里**可能包含 NTLMv2 哈希形式的登录凭据**,提取后用 hashcat 暴破即可拿到明文密码。省赛常考。
 
-## olevba 
+- 省赛的题目复现,讲一下自己的理解
 
-![](/CTF/Misc/22.webp)
+## olevba
 
-## Code（编码）
+[`olevba`](https://github.com/decalage2/oletools) 是 oletools 套件里的核心工具,用于**从 Office 文档(.doc / .xls / .docm 等)中提取并分析 VBA 宏代码**,扫描自动执行、字符串解码、Shell 调用等可疑行为。CTF 钓鱼附件题里几乎必备。
 
-#### 猪圈密码：
+```bash
+olevba <file>            # 提取并分析 VBA
+olevba <file> --decode   # 自动解码混淆字符串
+```
 
-![](/CTF/Misc/2.webp)
+![olevba 运行示例](/CTF/Misc/22.webp)
 
-- **多类变种**
+## Code(编码)
 
-![](/CTF/Misc/2.webp)
+CTF Misc 里常见的"图像替代"密码 —— 把字母映射为图形 / 符号 / 物体。识别这类密码的关键是**先认出风格**(中世纪、奇幻、游戏 IP、外星等),再查对应字母表还原。
 
-- #### 圣堂武士密码（猪圈密码的变种）：
+<div class="cipher-grid">
 
-![](/CTF/Misc/5.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/2.webp" alt="猪圈密码">
+<figcaption><strong>猪圈密码 (Pigpen)</strong><br>中世纪共济会图形替代,九宫格 + X 形组合,经典款,变种极多。</figcaption>
+</figure>
 
-#### 小猫密码：
+<figure class="cipher-card">
+<img src="/CTF/Misc/5.webp" alt="圣堂武士密码">
+<figcaption><strong>圣堂武士密码</strong><br>猪圈变种,源自圣殿骑士团十字会符号体系。</figcaption>
+</figure>
 
-![](/CTF/Misc/1.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/1.webp" alt="小猫密码">
+<figcaption><strong>小猫密码</strong><br>萌系替换密码,每个字母对应一个猫脸符号,趣味题常用。</figcaption>
+</figure>
 
-#### 五笔密码：
+<figure class="cipher-card">
+<img src="/CTF/Misc/4.webp" alt="五笔密码">
+<figcaption><strong>五笔密码</strong><br>把五笔输入法的字根按键映射为字母,考输入法熟练度。</figcaption>
+</figure>
 
-![](/CTF/Misc/4.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/6.webp" alt="提瓦特大陆">
+<figcaption><strong>提瓦特大陆</strong><br>出自《原神》游戏内的七国通用语字母表,二次元 CTF 包装。</figcaption>
+</figure>
 
-#### 提瓦特大陆：
+<figure class="cipher-card">
+<img src="/CTF/Misc/7.webp" alt="古埃及象形文字">
+<figcaption><strong>古埃及象形文字</strong><br>真实历史文字,部分 CTF 借用《罗塞塔石碑》的字母对照表。</figcaption>
+</figure>
 
-![](/CTF/Misc/6.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/8.webp" alt="外星人密码">
+<figcaption><strong>外星人密码</strong><br>几何符号字母表,无统一标准,常见于科幻包装题。</figcaption>
+</figure>
 
-#### 古埃及象形文字：
+<figure class="cipher-card">
+<img src="/CTF/Misc/9.webp" alt="克林贡语">
+<figcaption><strong>克林贡语 (Klingon)</strong><br>出自《星际迷航》,虚构语言但有完整官方字母表,可直接查表。</figcaption>
+</figure>
 
-![](/CTF/Misc/7.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/10.webp" alt="元素周期表">
+<figcaption><strong>元素周期表</strong><br>用化学元素符号(Au、Fe...)拼出字母串,按周期表原子序索引。</figcaption>
+</figure>
 
-#### 外星人密码：
+<figure class="cipher-card">
+<img src="/CTF/Misc/11.webp" alt="狄德拉字符">
+<figcaption><strong>狄德拉字符</strong><br>出自《暗精灵》(Dark Elves) 设定的虚构精灵语字母表。</figcaption>
+</figure>
 
-![](/CTF/Misc/8.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/12.webp" alt="银河字母">
+<figcaption><strong>银河字母</strong><br>游戏《指挥官基恩》(Commander Keen) 设计的 8-bit 风格字母表。</figcaption>
+</figure>
 
-#### 克林贡语密码《星际迷航》：
+<figure class="cipher-card">
+<img src="/CTF/Misc/13.webp" alt="跳舞的小人">
+<figcaption><strong>跳舞的小人</strong><br>出自福尔摩斯短篇《跳舞的小人》(柯南·道尔),不同舞姿代表字母。</figcaption>
+</figure>
 
-![](/CTF/Misc/9.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/14.webp" alt="旗语密码">
+<figcaption><strong>旗语密码</strong><br>国际海事旗语,两只手臂角度组合表示字母。</figcaption>
+</figure>
 
-#### 元素周期表：
+<figure class="cipher-card">
+<img src="/CTF/Misc/16.webp" alt="国际船用信号旗">
+<figcaption><strong>国际船用信号旗</strong><br>ICS 标准旗帜,每面对应一个字母或数字。</figcaption>
+</figure>
 
-![](/CTF/Misc/10.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/18.webp" alt="多斯拉克语">
+<figcaption><strong>多斯拉克语</strong><br>《权力的游戏》中游牧民族多斯拉克人的虚构文字。</figcaption>
+</figure>
 
-#### 狄德拉字符(暗精灵活神)：
+<figure class="cipher-card">
+<img src="/CTF/Misc/19.webp" alt="海利亚文字">
+<figcaption><strong>海利亚文字</strong><br>《塞尔达传说》中海拉鲁王国通用语,任天堂粉丝梗。</figcaption>
+</figure>
 
-![](/CTF/Misc/11.webp)
+<figure class="cipher-card">
+<img src="/CTF/Misc/20.webp" alt="Covenant字体">
+<figcaption><strong>Covenant 字体</strong><br>《光环》(Halo) 中星盟使用的外星文字。</figcaption>
+</figure>
 
-#### 银河字母(游戏《指挥官基恩》)：
+<figure class="cipher-card">
+<img src="/CTF/Misc/21.webp" alt="DTMF 键盘">
+<figcaption><strong>DTMF 键盘</strong><br>电话双音多频,每个数字对应一对频率,可通过音频频谱反推数字。</figcaption>
+</figure>
 
-![](/CTF/Misc/12.webp)
+</div>
 
-#### 跳舞的小人：
-
-![](/CTF/Misc/13.webp)
-
-#### 旗语密码：
-
-![](/CTF/Misc/14.webp)
-
-#### 国际船用信号旗：
-
-![](/CTF/Misc/16.webp)
-
-#### 夏多密码（又称曲折密码）:
+### 夏多密码(又称曲折密码)
 
 ![](/CTF/Misc/17.webp)
 
-在以上所示的字母表密钥的底部，列有四个附加符号1，2，3，4.他们可以放在密文中的任何地方。每个附加符号指示，如何转动写有密文的纸张，再进行后续的加密或解密操作，直到出现另一个附加符号。
-可以把每个附加符号中的那根线看作是指示针，它指示了纸张的上端朝上，朝下，朝左，朝右。比如说：
-如果出现符号3，那么纸张就应该转动180度，使其上端朝下；
-符号2表示纸张上端朝右；
-符号4表示纸张上端朝左；
-符号1表示纸张上端朝上
+在以上字母表密钥的底部,列有四个附加符号 `1` `2` `3` `4`,它们可以放在密文中的任何地方。每个附加符号指示**如何转动写有密文的纸张**,再进行后续的加密或解密操作,直到出现另一个附加符号。
 
-#### 多斯拉克语字母表：
+每个附加符号中的那根线可以看作是指示针,它指示纸张上端朝向:
 
-![](/CTF/Misc/18.webp)
+| 符号 | 朝向 |
+|---|---|
+| `1` | 纸张上端朝上 |
+| `2` | 纸张上端朝右 |
+| `3` | 纸张上端朝下(转动 180°) |
+| `4` | 纸张上端朝左 |
 
-#### 海利亚文字：
-
-![](/CTF/Misc/19.webp)
-
-#### Covenant字体：
-
-![](/CTF/Misc/20.webp)
-
-#### top cipher:
+### top cipher
 
 ![](/CTF/Misc/15.webp)
 
-exp:
+4 字母组(`ACEG` / `ADEG` ...)替换密码,有 24 字母全表对照。常见解密思路:把每 4 个密文字符切片,在字母表里查对应明文字母。
+
+**exp:**
 
 ```python
 cipherList = {'M':'ACEG','R':'ADEG','K':'BCEG','S':'BDEG','A':'ACEH','B':'ADEH','L':'BCEH','U':'BDEH','D':'ACEI','C':'ADEI','N':'BCEI','V':'BDEI','H':'ACFG','F':'ADFG','O':'BCFG','W':'BDFG','T':'ACFH','G':'ADFH','P':'BCFH','X':'BDFH','E':'ACFI','I':'ADFI','Q':'BCFI','Y':'BDFI'}
@@ -181,9 +226,6 @@ for i in s2:
 
 print(flag2)
 ```
-#### DTMF键盘
-
-![](/CTF/Misc/21.webp)
 
 ## Matlab -> Python
 
@@ -243,18 +285,20 @@ imgg = Image.fromarray(flag).save('res.bmp')
 
 - 将表格全选，选择菜单栏中的， 表单格式 => 突出显示单元格规则 => 文本包含
 
-##pwntools
+## pwntools
+
+`pwntools` 是 Pwn 题里最常用的 Python 库,封装了进程交互、汇编、ELF 解析、ROP 等功能。下面是 IO 部分最常用的 API 速查:
 
 ```python
 send(data):                        发送数据
-sendline(data) :                   发送一行数据，相当于在末尾加'\n'      
-recv(numb=4096, timeout=default) : 给出接收字节数,timeout指定超时
-recvuntil(delims, drop=False) :    接收到delims的pattern
-（以下可以看作until的特例）
-recvline(keepends=True) :          接收到"\n，keepends指定保留\n"
-recvall() : 接收到EOF
-recvrepeat(timeout=default) :      接收到EOF或timeout
-interactive() :                    与shell交互
+sendline(data) :                   发送一行数据,相当于在末尾加 '\n'
+recv(numb=4096, timeout=default) : 给出接收字节数,timeout 指定超时
+recvuntil(delims, drop=False) :    接收到 delims 的 pattern
+# 以下可以看作 until 的特例
+recvline(keepends=True) :          接收到 '\n',keepends 指定是否保留 \n
+recvall() :                        接收到 EOF
+recvrepeat(timeout=default) :      接收到 EOF 或 timeout
+interactive() :                    与 shell 交互
 ```
 
 # 相关工具使用

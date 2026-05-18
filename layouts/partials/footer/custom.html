@@ -245,16 +245,21 @@
 </script>
 
 <style>
-/* 代码块容器：默认折叠 */
+/* 代码块容器：基础样式 */
 .highlight {
-    height: 200px;
-    overflow: hidden;
     position: relative;
     transition: height .35s ease;
 }
 
+/* 只有 JS 判定为"超长"的代码块(>400px)才会被标记 .code-more-init
+   并默认折叠到 200px;短代码块保持自然高度,避免底部出现空白 */
+.highlight.code-more-init {
+    height: 200px;
+    overflow: hidden;
+}
+
 /* 展开状态：高度由 JS 写入精确值 */
-.highlight.code-show {
+.highlight.code-more-init.code-show {
     height: auto;
 }
 
@@ -307,6 +312,36 @@
     opacity: 0;
     pointer-events: none;
 }
+
+/* 折叠按钮 —— 位于 Copy 按钮左侧 8px,样式跟 Copy 完全对齐 */
+.codeFoldButton {
+    position: absolute;
+    top: calc(var(--card-padding));
+    /* Copy 按钮宽度约 70~90px(取决于 "Copy" / "Copied!" 文字),这里留 96px 间距保证不重叠 */
+    right: calc(var(--card-padding) + 96px);
+    background: var(--card-background);
+    border: none;
+    box-shadow: var(--shadow-l2);
+    border-radius: var(--tag-border-radius);
+    padding: 8px 16px;
+    color: var(--card-text-color-main);
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s ease;
+    z-index: 2;
+}
+
+/* 只有"已展开"状态才让 Fold 按钮可见 + 跟 Copy 一样 hover 显现 */
+.highlight.code-show:hover .codeFoldButton {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.codeFoldButton:hover {
+    transform: translateY(-1px);
+}
 </style>
 
 <script>
@@ -338,7 +373,14 @@ function initCodeMoreBox() {
         moreBox.appendChild(btn);
         block.appendChild(moreBox);
 
-        // 点击事件：先写入精确目标高度再触发 transition，结束后改为 auto
+        // 折叠按钮(Copy 左侧),展开后才可点击
+        const foldBtn = document.createElement("button");
+        foldBtn.type = "button";
+        foldBtn.className = "codeFoldButton";
+        foldBtn.textContent = "Fold";
+        block.appendChild(foldBtn);
+
+        // 展开:先写入精确目标高度再触发 transition,结束后改为 auto
         btn.addEventListener("click", () => {
             const target = block.scrollHeight;
             block.style.height = target + 'px';
@@ -347,6 +389,20 @@ function initCodeMoreBox() {
                 block.classList.add("code-show");
                 block.style.height = '';
                 window.dispatchEvent(new Event('resize'));
+            }, { once: true });
+        });
+
+        // 折叠:height: auto 不能直接 transition,先锁定为像素值再过渡到 200px
+        foldBtn.addEventListener("click", () => {
+            block.style.height = block.scrollHeight + 'px';
+            void block.offsetHeight;              // 强制 reflow,让浏览器接受起点像素值
+            block.classList.remove("code-show");
+            block.style.height = '200px';         // 触发 transition
+            block.addEventListener('transitionend', () => {
+                block.style.height = '';          // 清掉 inline,交给 CSS 的 height:200px
+                moreBox.classList.remove("hide"); // 重新显示底部"展开"小白框
+                // 把视口对齐到代码块顶部,避免折叠后用户卡在中间不知道发生了什么
+                block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, { once: true });
         });
     });
