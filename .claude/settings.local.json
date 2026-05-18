@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:cdn.jsdelivr.net)"
+      "WebFetch(domain:cdn.jsdelivr.net)",
+      "WebFetch(domain:pub-fb5f542427074d66a4742ed7d0fcb694.r2.dev)"
     ]
   }
 }
