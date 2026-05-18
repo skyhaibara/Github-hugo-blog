@@ -398,3 +398,189 @@ a {
     height: 100%;
     z-index: -1;
 }
+
+//=================================================================
+// Markdown 正文美化(只作用于 .article-content)
+//=================================================================
+.article-content {
+
+  //--- 标题 h1-h6 ---
+  h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 80px;
+    transition: transform .25s ease, color .25s ease;
+  }
+
+  h1 {
+    padding-bottom: 0.4em;
+    margin: 1.6em 0 0.8em;
+    background: linear-gradient(90deg, var(--accent-color), transparent) bottom/100% 2px no-repeat;
+  }
+
+  h2 {
+    padding-left: 14px;
+    margin: 1.5em 0 0.7em;
+    border-left: 5px solid var(--accent-color);
+    &:hover { transform: translateX(4px); }
+  }
+
+  h3 {
+    padding-left: 10px;
+    margin: 1.3em 0 0.6em;
+    border-left: 3px solid var(--accent-color);
+    opacity: 0.92;
+    &:hover { transform: translateX(2px); }
+  }
+
+  h4, h5, h6 {
+    margin: 1.1em 0 0.4em;
+    color: var(--emphasize-text-color);
+    &::before {
+      content: '#';
+      margin-right: 6px;
+      color: var(--accent-color);
+      opacity: 0.6;
+    }
+  }
+
+  //--- 表格 ---
+  table {
+    width: 100%;
+    margin: 1.4em 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-l1);
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+    }
+
+    thead th {
+      background: var(--accent-color);
+      color: #fff;
+      font-weight: 600;
+      border-bottom: none;
+    }
+
+    tbody tr {
+      transition: background .2s ease;
+      &:nth-child(even) { background: rgba(128, 128, 128, 0.04); }
+      &:hover           { background: rgba(128, 128, 128, 0.10); }
+      &:last-child td   { border-bottom: none; }
+    }
+  }
+
+  //--- 列表 ---
+  ul, ol {
+    padding-left: 1.8em;
+    li { margin: 0.35em 0; line-height: 1.75; }
+    ul, ol { margin-top: 0.3em; }
+  }
+
+  // 无序列表 → 圆点 bullet
+  ul > li {
+    list-style: none;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1.15em;
+      top: 0.7em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      opacity: 0.85;
+    }
+  }
+
+  // 有序列表 → 数字带圆形背景
+  ol {
+    counter-reset: ol-counter;
+    > li {
+      list-style: none;
+      position: relative;
+      counter-increment: ol-counter;
+      &::before {
+        content: counter(ol-counter);
+        position: absolute;
+        left: -1.9em;
+        top: 0.1em;
+        width: 1.4em;
+        height: 1.4em;
+        border-radius: 50%;
+        background: var(--accent-color);
+        color: #fff;
+        font-size: 0.78em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  //--- 行内代码 ---
+  code {
+    padding: 0.15em 0.45em;
+    margin: 0 0.15em;
+    font-size: 0.88em;
+    font-family: var(--code-font-family);
+    background: rgba(128, 128, 128, 0.12);
+    border: 1px solid rgba(128, 128, 128, 0.18);
+    border-radius: 6px;
+    color: var(--accent-color-darker);
+  }
+  // 重置 — 代码块里的 code 不要继承行内样式
+  pre code, .highlight code {
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  //--- hr 分隔线 ---
+  hr {
+    position: relative;
+    height: 1px;
+    margin: 2.5em 0;
+    border: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--accent-color) 20%,
+      var(--accent-color) 80%,
+      transparent 100%
+    );
+    opacity: 0.5;
+    &::after {
+      content: '✦';
+      position: absolute;
+      top: -0.75em;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0 0.6em;
+      background: var(--card-background);
+      color: var(--accent-color);
+      font-size: 1.1em;
+    }
+  }
+
+  //--- 链接 hover 下划线从中间向两侧展开 ---
+  p a, li a, td a {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: 0 1.5px;
+    transition: background-size .3s ease;
+    &:hover {
+      background-size: 100% 1.5px;
+    }
+  }
+}
