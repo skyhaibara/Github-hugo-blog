@@ -99,6 +99,60 @@
 		"selector": ".beian a",
 		"text": ["我也是有户口的人哦。", "我的主人可是遵纪守法的好主人。"]
 	}, {
+		"selector": ".site-avatar, .site-logo",
+		"text": ["我家主人好看吗？", "这是我家主人(*´∇｀*)", "摸摸头像,头像还会转哦～"]
+	}, {
+		"selector": ".site-name a, .site-name",
+		"text": ["这是博客的名字呢～", "点这里能回到首页哦！"]
+	}, {
+		"selector": ".site-description",
+		"text": ["主人的座右铭就在这里啦～", "短短一句话，品味主人的心境~"]
+	}, {
+		"selector": ".section-title",
+		"text": ["这里是分组的标题哟～"]
+	}, {
+		"selector": ".article-list article",
+		"text": ["这篇文章看起来不错，点进去瞧瞧？", "戳一下就能看全文了～"]
+	}, {
+		"selector": ".article-image img",
+		"text": ["文章封面，主人精心挑的呢～"]
+	}, {
+		"selector": ".article-time--published",
+		"text": ["这是文章发布的时间哦～"]
+	}, {
+		"selector": ".article-time--reading",
+		"text": ["看完大概要这么久～", "阅读时长只是估算啦~"]
+	}, {
+		"selector": ".article-lastmod",
+		"text": ["这是最后修改的时间～"]
+	}, {
+		"selector": ".article-subtitle",
+		"text": ["副标题,补充说明用的~"]
+	}, {
+		"selector": ".article-tags a",
+		"text": ["要去看看 <span>{text}</span> 标签下的其他文章么？"]
+	}, {
+		"selector": ".article-category a, .article-category",
+		"text": ["这篇文章属于 <span>{text}</span> 分类～"]
+	}, {
+		"selector": ".widget--toc a, .toc-container a",
+		"text": ["跳转到这一节看看~", "目录导航,看长文很方便！"]
+	}, {
+		"selector": ".widget.tagCloud a, .tagCloud-tags a",
+		"text": ["要去看看 <span>{text}</span> 标签么？", "点击查看此标签下的所有文章哟！"]
+	}, {
+		"selector": ".widget.archives a, .widget-archive--list a",
+		"text": ["这里有 <span>{text}</span> 的归档文章哦～"]
+	}, {
+		"selector": ".menu-social a",
+		"text": ["去主人的 <span>{text}</span> 看看吧～", "主人在这里也很活跃哦!"]
+	}, {
+		"selector": ".hamburger",
+		"text": ["菜单藏在这里哦，点开看看~"]
+	}, {
+		"selector": ".search-form input, .widget--search input",
+		"text": ["想搜点什么呢？输入关键词就能找到～", "在找什么呢? 帮主人翻翻看吧!"]
+	}, {
 		"selector": ".container a[href^='http'], .nav-link .nav-text",
 		"text": ["要去看看 <span>{text}</span> 么？", "去 <span>{text}</span> 逛逛吧。", "到 <span>{text}</span> 看看吧。"]
 	}, {

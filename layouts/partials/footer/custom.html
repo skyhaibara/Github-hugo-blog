@@ -81,7 +81,68 @@
       });
       bindWaifuPosition();
       waitWaifuReady();
+      bindWaifuTips();
     }).catch(err => console.warn("[live2d] init failed:", err));
+  }
+
+  // 这个 fork 版的 waifu-tips.js 不读 JSON 里的 mouseover/click 数组(只跑 time/seasons/message),
+  // 自己挂事件代理:document.body 上一次性 mouseover + click,匹配 JSON 选择器,复用库自带的 #waifu-tips 气泡元素显示。
+  function bindWaifuTips() {
+    fetch(tipsJsonPath).then(r => r.json()).then(tips => {
+      let lastHoverEl = null;
+      let hideTimer = null;
+
+      const pickText = (arr) => {
+        const a = Array.isArray(arr) ? arr : [arr];
+        return a[Math.floor(Math.random() * a.length)];
+      };
+
+      const showTip = (textArr, hostEl) => {
+        const el = document.getElementById("waifu-tips");
+        if (!el) return;
+        let msg = pickText(textArr);
+        if (msg.includes("{text}") && hostEl) {
+          msg = msg.replace("{text}", (hostEl.textContent || "").trim());
+        }
+        el.innerHTML = msg;
+        el.classList.add("waifu-tips-active");
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => el.classList.remove("waifu-tips-active"), 4000);
+      };
+
+      document.body.addEventListener("mouseover", (e) => {
+        if (!tips.mouseover) return;
+        for (const item of tips.mouseover) {
+          try {
+            const hit = e.target.closest(item.selector);
+            if (hit && hit !== lastHoverEl) {
+              lastHoverEl = hit;
+              showTip(item.text, hit);
+              return;
+            }
+          } catch (_) {}
+        }
+      });
+
+      // 完全离开当前 hover 元素时重置,允许再次进入触发
+      document.body.addEventListener("mouseout", (e) => {
+        if (lastHoverEl && !lastHoverEl.contains(e.relatedTarget)) {
+          lastHoverEl = null;
+        }
+      });
+
+      document.body.addEventListener("click", (e) => {
+        if (!tips.click) return;
+        for (const item of tips.click) {
+          try {
+            if (e.target.closest(item.selector)) {
+              showTip(item.text, e.target);
+              return;
+            }
+          } catch (_) {}
+        }
+      });
+    }).catch(err => console.warn("[live2d] tips load failed:", err));
   }
 
   function bindWaifuPosition() {
