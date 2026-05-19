@@ -57,16 +57,34 @@
 		"selector": ".copyCodeButton",
 		"text": ["代码可以直接点击复制哟。"]
 	}, {
+		"selector": ".codeFoldButton",
+		"text": ["看完啦？点我把这段代码折叠回去吧～", "代码太长了？点一下就能收起来哦。"]
+	}, {
+		"selector": ".code-more-btn",
+		"text": ["嘿，这里还藏着更多代码呢，点我展开！", "想看完整代码吗？戳这个按钮～"]
+	}, {
+		"selector": "#backTopBtn",
+		"text": ["滚累了吗？点我一键飞回顶部！", "回顶部不用一直滑，点这里方便多啦～"]
+	}, {
+		"selector": "#dark-mode-toggle",
+		"text": ["想换个心情？切换一下夜间模式吧～", "白天黑夜，挑一个喜欢的主题色～"]
+	}, {
+		"selector": ".cipher-card img",
+		"text": ["这是 CTF 里常见的图像密码哦，点一下就能看大图～", "图形密码千奇百怪，点开放大慢慢看～", "做 Misc 题的时候这些密码很常见的，点开仔细瞧瞧！"]
+	}, {
+		"selector": ".cipher-lightbox-close",
+		"text": ["看完啦？点我关上灯箱～", "X 一下就关掉哦！"]
+	}, {
 		"selector": ".highlight .table-container, .gist",
 		"text": ["GitHub！我是新手！", "PHP 是最好的语言！"]
 	}, {
 		"selector": "a[href^='mailto']",
 		"text": ["邮件我会及时回复的！", "点击就可以发送邮件啦～"]
 	}, {
-		"selector": "a[href^='/tags/']",
+		"selector": "a[href*='/tags/']",
 		"text": ["要去看看 <span>{text}</span> 标签么？", "点它可以查看此标签下的所有文章哟！"]
 	}, {
-		"selector": "a[href^='/categories/']",
+		"selector": "a[href*='/categories/']",
 		"text": ["要去看看 <span>{text}</span> 分类么？", "点它可以查看此分类下的所有文章哟！"]
 	}, {
 		"selector": ".post-title-link",
@@ -80,9 +98,6 @@
 	}, {
 		"selector": ".beian a",
 		"text": ["我也是有户口的人哦。", "我的主人可是遵纪守法的好主人。"]
-	}, {
-		"selector": ".container a[href^='https://space.bilibili.com/40026657'], .nav-link .nav-text",
-		"text": ["要去看看 <span>{text}</span> 么？", "去 <span>{text}</span> 逛逛吧。", "到 <span>{text}</span> 看看吧。"]
 	}, {
 		"selector": ".container a[href^='http'], .nav-link .nav-text",
 		"text": ["要去看看 <span>{text}</span> 么？", "去 <span>{text}</span> 逛逛吧。", "到 <span>{text}</span> 看看吧。"]
@@ -147,6 +162,21 @@
 	},{
 		"selector": ".copyCodeButton",
 		"text": ["代码已经复制到剪贴板了哦！", "代码已经复制到剪贴板了，快去粘贴吧！"]
+	},{
+		"selector": ".codeFoldButton",
+		"text": ["好咧～代码已经收起来了！", "折叠完成，眼睛清爽多了～"]
+	},{
+		"selector": ".code-more-btn",
+		"text": ["展开啦！可以看完整代码了～", "瞧，剩下的部分都在这儿呢！"]
+	},{
+		"selector": "#backTopBtn",
+		"text": ["嗖～回到顶部啦！", "一键飞顶，效率拉满！"]
+	},{
+		"selector": ".cipher-card img",
+		"text": ["看清楚每一个符号了吗？", "放大版来啦～慢慢研究！", "原图细节满分，认得出是哪种密码吗？"]
+	},{
+		"selector": ".cipher-lightbox-close",
+		"text": ["好嘞～灯箱已关闭！", "下一张密码继续看？"]
 	}],
 	"time": [{
 		"hour": "6-7",

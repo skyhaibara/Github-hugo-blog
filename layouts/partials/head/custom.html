@@ -1,4 +1,7 @@
 {{/* 预加载关键资源 */}}
+{{/* R2(Live2D 桌宠资源主源) — 提前完成 DNS + TLS 握手,首次脚本/模型请求省 200~500ms */}}
+<link rel="preconnect" href="https://pub-fb5f542427074d66a4742ed7d0fcb694.r2.dev" crossorigin>
+<link rel="dns-prefetch" href="https://pub-fb5f542427074d66a4742ed7d0fcb694.r2.dev">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preload" href="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js" as="script">

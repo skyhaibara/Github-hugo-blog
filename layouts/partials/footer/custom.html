@@ -80,6 +80,7 @@
         dragDirection: ["x"]
       });
       bindWaifuPosition();
+      waitWaifuReady();
     }).catch(err => console.warn("[live2d] init failed:", err));
   }
 
@@ -94,6 +95,57 @@
         clearInterval(wait);
       }
     }, 100);
+  }
+
+  // 桌宠"加载完成才弹出":
+  //   监听网络层 — 用 PerformanceObserver 等模型纹理(3 张 .webp)全部下载完。
+  //   这是比"等 N 秒"更可靠的信号:无论网速快慢,都精确等到模型资源就绪。
+  //   纹理路径匹配模式:`/yangyang.4096/texture_` 命中所有 3 张。
+  //   全部加载完后再额外等 800ms,让纹理上传到 GPU + 首帧绘制完成。
+  function waitWaifuReady() {
+    const TEX_PATH_HINT = "/yangyang.4096/texture_";
+    const NEEDED = 3;
+    const GPU_UPLOAD_DELAY = 800;
+    const SAFETY_TIMEOUT = 30000;
+    let textures = 0;
+    let done = false;
+    let observer = null;
+
+    const finalize = () => {
+      if (done) return;
+      done = true;
+      try { observer && observer.disconnect(); } catch (e) {}
+      setTimeout(() => {
+        document.body.classList.add("waifu-ready");
+        document.getElementById("waifu")?.classList.add("waifu-ready");
+      }, GPU_UPLOAD_DELAY);
+    };
+
+    // 1. 检查已经加载完的资源(可能脚本启动前纹理就缓存命中了)
+    try {
+      for (const e of performance.getEntriesByType("resource")) {
+        if (e.name.includes(TEX_PATH_HINT)) textures++;
+      }
+    } catch (e) {}
+    if (textures >= NEEDED) { finalize(); return; }
+
+    // 2. 监听新资源加载
+    try {
+      observer = new PerformanceObserver((list) => {
+        for (const e of list.getEntries()) {
+          if (e.name.includes(TEX_PATH_HINT)) {
+            textures++;
+            if (textures >= NEEDED) { finalize(); return; }
+          }
+        }
+      });
+      observer.observe({ entryTypes: ["resource"] });
+    } catch (e) {
+      // PerformanceObserver 不支持,直接走超时兜底
+    }
+
+    // 3. 超时兜底:无论检测到与否,30s 后强制显示
+    setTimeout(finalize, SAFETY_TIMEOUT);
   }
 
   function setupWaifuPosition(waifu) {
@@ -128,6 +180,154 @@
     document.addEventListener("touchstart", onDown, { passive: true });
     document.addEventListener("touchend", onUp);
   }
+</script>
+
+<style>
+  /* 桌宠加载完才出现:默认整体隐藏 + fade-in 过渡 */
+  #waifu {
+    opacity: 0 !important;
+    pointer-events: none;
+    /* 重新声明 transition 把 opacity 加进来,保留库自带的 transform / bottom 过渡 */
+    transition: transform .3s ease-in-out, bottom 3s ease-in-out, opacity .55s ease-out !important;
+  }
+  #waifu.waifu-ready {
+    opacity: 1 !important;
+    pointer-events: auto;
+  }
+
+  /* 注:之前在这里加了 #waifu-tips { visibility: hidden !important } 作为"双保险",
+     但如果 body.waifu-ready 没成功添加(纹理检测路径不匹配等),气泡会被永久锁死。
+     已撤除 —— 单靠 #waifu opacity 那层就够了(气泡 DOM 在 #waifu 内时自动跟着隐藏),
+     库自带的 .waifu-tips-active 控制单条气泡的弹出。 */
+
+  /* Cipher 卡片点击放大 lightbox(Stack 主题的 PhotoSwipe 只匹配 markdown 渲染的图,
+     我们的 raw HTML cipher-card 不在它的工作范围内,这里独立实现一个) */
+  .cipher-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    cursor: zoom-out;
+    opacity: 0;
+    animation: cipher-fadein .22s ease-out forwards;
+  }
+  .cipher-lightbox-content {
+    max-width: min(90vw, 900px);
+    text-align: center;
+    cursor: default;
+  }
+  .cipher-lightbox-content img {
+    display: block;
+    max-width: 100%;
+    max-height: 72vh;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+  .cipher-lightbox-caption {
+    margin-top: 1.5rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 15px;
+    line-height: 1.6;
+    text-align: left;
+    /* 文字延迟 0.2s 渐显 —— 让图片先出来,再"轻轻补上"描述 */
+    opacity: 0;
+    animation: fadein-text 0.4s 0.2s forwards;
+  }
+  @keyframes fadein-text {
+    to { opacity: 1; }
+  }
+  .cipher-lightbox-caption strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .cipher-lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .2s ease;
+  }
+  .cipher-lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+  @keyframes cipher-fadein {
+    to { opacity: 1; }
+  }
+</style>
+
+<script>
+  // Cipher 卡片点击放大功能 — 监听整个文档的 cipher-card 图片点击事件
+  (function () {
+    function openCipherLightbox(img) {
+      const card = img.closest(".cipher-card");
+      const caption = card && card.querySelector("figcaption");
+
+      const overlay = document.createElement("div");
+      overlay.className = "cipher-lightbox";
+
+      const content = document.createElement("div");
+      content.className = "cipher-lightbox-content";
+      content.addEventListener("click", e => e.stopPropagation()); // 阻止冒泡到 overlay
+
+      const bigImg = document.createElement("img");
+      bigImg.src = img.src;
+      bigImg.alt = img.alt || "";
+      content.appendChild(bigImg);
+
+      if (caption) {
+        const cap = document.createElement("div");
+        cap.className = "cipher-lightbox-caption";
+        cap.innerHTML = caption.innerHTML;
+        content.appendChild(cap);
+      }
+
+      const closeBtn = document.createElement("button");
+      closeBtn.type = "button";
+      closeBtn.className = "cipher-lightbox-close";
+      closeBtn.textContent = "×";
+      closeBtn.setAttribute("aria-label", "Close");
+      overlay.appendChild(closeBtn);
+
+      overlay.appendChild(content);
+
+      const close = () => {
+        overlay.remove();
+        document.removeEventListener("keydown", escHandler);
+      };
+      const escHandler = e => { if (e.key === "Escape") close(); };
+
+      overlay.addEventListener("click", close);
+      closeBtn.addEventListener("click", close);
+      document.addEventListener("keydown", escHandler);
+
+      document.body.appendChild(overlay);
+    }
+
+    // 用事件委托:监听 document,捕获 cipher-card 内 img 的点击
+    // 这样 pjax 切页之后无需重新绑定
+    document.addEventListener("click", e => {
+      const img = e.target.closest(".cipher-card img");
+      if (img) {
+        e.preventDefault();
+        openCipherLightbox(img);
+      }
+    });
+  })();
 </script>
 
 

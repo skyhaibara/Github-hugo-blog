@@ -9,7 +9,7 @@ links:
   - title: Claude Code
     description: Anthropic 出品的官方 CLI / AI 编程助手 —— 本博客整套部署调优与样式都由它协助完成
     website: https://claude.com/claude-code
-    image: https://github.com/anthropics.png
+    image: anthropic-logo.png
 
   - title: Hugo
     description: A tool developed in Go language for generating static blog pages
@@ -24,22 +24,22 @@ links:
   - title: Vercel
     description: 本博客的实际托管平台 —— 监听 GitHub push 自动 build + 全球 CDN 服务
     website: https://vercel.com
-    image: https://github.com/vercel.png
+    image: vercel-logo.png
 
   - title: Cloudflare
     description: 提供 DNS 解析,以及 R2 对象存储托管 Live2D 桌宠的模型与资源
     website: https://www.cloudflare.com
-    image: https://github.com/cloudflare.png
+    image: cloudflare-logo.png
 
   - title: Live2D Cubism
     description: 网页右下角桌宠用到的 2D 动画引擎,基于 Live2D Cubism SDK
     website: https://www.live2d.com/
-    image: https://github.com/Live2D.png
+    image: live2d-logo.png
 
   - title: jsDelivr
     description: 开源项目免费的全球 CDN —— 作为 R2 之外的备份源使用
     website: https://www.jsdelivr.com/
-    image: https://github.com/jsdelivr.png
+    image: jsdelivr-logo.png
 
   - title: particles.js
     description: 用作站点背景的轻量级粒子动画库
@@ -49,7 +49,7 @@ links:
   - title: PJAX
     description: 页面无刷新跳转(pushState + Ajax),提升站内导航流畅度
     website: https://github.com/MoOx/pjax
-    image: https://github.com/MoOx.png
+    image: pjax-logo.png
 
   - title: TypeScript
     description: TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.

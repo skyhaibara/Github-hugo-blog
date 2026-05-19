@@ -496,24 +496,25 @@ a {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: var(--shadow-l1);
+    background: var(--card-background);
 
     th, td {
       padding: 10px 14px;
       text-align: left;
-      border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+      border-bottom: 1px solid rgba(128, 128, 128, 0.2);
     }
 
     thead th {
       background: var(--accent-color);
-      color: #fff;
+      color: #000;
       font-weight: 600;
       border-bottom: none;
     }
 
     tbody tr {
       transition: background .2s ease;
-      &:nth-child(even) { background: rgba(128, 128, 128, 0.04); }
-      &:hover           { background: rgba(128, 128, 128, 0.10); }
+      &:nth-child(even) { background: rgba(128, 128, 128, 0.06); }
+      &:hover           { background: rgba(128, 128, 128, 0.14); }
       &:last-child td   { border-bottom: none; }
     }
   }
@@ -629,54 +630,105 @@ a {
     }
   }
 
-  //--- 密码图谱网格画廊 (.cipher-grid + .cipher-card)
-  //    用于 CTF Misc 等帖子里大量"图像 cipher 卡片"的紧凑展示
+  //--- 密码图谱瀑布流画廊 (.cipher-grid + .cipher-card)
+  //    用 CSS multi-column 实现 masonry:图片按原始比例排列,高度不一,密集填充
+  //    标题/描述常态隐藏,鼠标悬浮时从底部滑出半透明黑底浮层
   .cipher-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.2rem;
+    column-count: 3;
+    column-gap: 1rem;
     margin: 1.6em 0;
-    align-items: start;
+
+    @media (max-width: 768px) {
+      column-count: 2;
+    }
+    @media (max-width: 480px) {
+      column-count: 1;
+    }
   }
 
   .cipher-card {
-    margin: 0;
-    padding: 0.9em 0.8em 0.8em;
-    background: rgba(128, 128, 128, 0.06);
-    border: 1px solid rgba(128, 128, 128, 0.12);
-    border-radius: 12px;
-    text-align: center;
-    transition: transform .2s ease, box-shadow .2s ease;
+    position: relative;
+    width: 100%;            // 关键:锁死等于列宽,防止被图自然宽度撑开溢出到隔壁列
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 180px;      // 留出最小高度 — 小图(如圣堂密码)下方留白用来盛装悬浮介绍,不挡图
+    margin: 0 0 1rem;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    display: block;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    transition: transform .25s ease, box-shadow .25s ease;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-l1);
+      box-shadow: var(--shadow-l2);
+
+      figcaption {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     figcaption {
-      margin-top: 0.6em;
-      font-size: 0.82em;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 1.1em 1em 1em;        // 0.8/0.7 → 1.1/1 给文字更多呼吸空间
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.88) 75%, transparent 100%);  // 主体改实色,只在顶部边缘 fade
+      color: #fff;
+      font-size: 0.92em;             // 0.78 → 0.92 字明显放大
       line-height: 1.55;
-      color: var(--card-text-color-secondary, var(--emphasize-text-color));
       text-align: left;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform .3s ease, opacity .3s ease;
+      pointer-events: none;
 
       strong {
         display: block;
-        margin-bottom: 0.25em;
-        color: var(--card-text-color-main);
-        font-size: 0.95em;
+        margin-bottom: 0.3em;
+        color: #fff;
+        font-size: 1em;              // 0.95 → 1 (相对 figcaption,所以也跟着大)
       }
     }
   }
 }
 
-// 覆盖文章默认 img max-width: 96% !important,让 cipher-card 内的图按需缩放
+// 暗色模式下表格配色加强:更亮的斑马纹 + 边框 + hover,文字也提亮
+[data-scheme="dark"] .article-content table:not(.lntable) {
+  background: #1a1a1f;
+  color: #e6e6e6;
+
+  th, td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  tbody tr {
+    &:nth-child(even) { background: rgba(255, 255, 255, 0.045); }
+    &:hover           { background: rgba(255, 255, 255, 0.10); }
+  }
+
+  // 表格里行内 code 在暗色下提亮
+  code {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--accent-color);
+  }
+}
+
+// 覆盖文章默认 img max-width: 96% !important,cipher-card 内的图按原始尺寸显示,水平居中
 .article-page .main-article .article-content .cipher-grid img {
   max-width: 100% !important;
-  max-height: 160px !important;
   width: auto !important;
-  object-fit: contain;
+  height: auto !important;
   margin: 0 auto;
   display: block;
+  border-radius: 8px;
   cursor: zoom-in;
 }
