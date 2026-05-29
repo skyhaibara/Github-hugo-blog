@@ -388,6 +388,17 @@
         openCipherLightbox(img);
       }
     });
+
+    // 主页文章卡整张可点击 — 用 JS 代理,不用 CSS overlay
+    // 优点:overlay 会盖住所有子元素的 hover 事件,导致 waifu 提示词识别不到具体元素(日期/封面/分类)
+    // 这里只在"点击落在非链接的空白处"时,模拟点击该卡的标题链接(标题链接 PJAX 已经接管,会走 pjax 跳转)
+    document.addEventListener("click", e => {
+      const article = e.target.closest(".article-list article");
+      if (!article) return;
+      if (e.target.closest("a")) return;  // 已经在链接上,放行原始行为
+      const titleLink = article.querySelector(".article-title a");
+      if (titleLink) titleLink.click();
+    });
   })();
 </script>
 
@@ -768,31 +779,52 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
     })
 </script>
 
-<script defer src="https://cn.vercount.one/js"></script>
-
 <script>
-  // 阅读次数 — 显示隐藏已由 CSS (body:not(.article-page) #viewCount) 接管,这里只处理 PJAX 后的更新
+  // 阅读次数 — 完全自己实现,不引入 vercount 自带的 IIFE 脚本。
+  // 原因:
+  //   1. vercount IIFE 只在初次 DOMContentLoaded 跑一次,PJAX 跳页后不重跑
+  //   2. vercount 用 getElementById,主页多张卡同 ID 时只更新第一个,且写的是当前 URL 的 PV 不是各卡文章的 PV
+  //   3. 同时挂两套(vercount + 我们)会双重 POST,把 site_pv 翻倍累加
   //
-  // vercount 是 IIFE 脚本,只在初次 DOMContentLoaded 执行一次,并把元素引用缓存到内部变量。
-  // PJAX 跳页后 DOM 被替换,但 vercount 既不会重跑也不会重查 DOM,导致新页的 span 永远停在 "loading..."。
-  // 兜底方案:监听 pjax:complete,如果落到文章页则手动直接调 vercount events API 写入 DOM。
-  function refreshViewCount() {
-    if (!document.body.classList.contains("article-page")) return;
-    const el = document.getElementById("vercount_value_page_pv");
-    if (!el) return;
-    fetch("https://events.vercount.one/api/v2/log", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: location.href, isNewUv: false })
-    })
-      .then(r => r.json())
-      .then(j => {
-        if (j && j.status === "success" && j.data && j.data.page_pv != null) {
-          el.textContent = String(j.data.page_pv);
-        }
+  // 实现:querySelectorAll 找所有 #viewCount,按所在 <article> 的标题链接得到每篇文章的真实 URL,
+  // 分别调 vercount events API,把对应卡片的 span 写成各自的 page_pv。
+  function refreshAllViewCounts() {
+    const isSinglePage = document.body.classList.contains("article-page");
+    const viewCounts = document.querySelectorAll("#viewCount");
+
+    viewCounts.forEach(vc => {
+      const span = vc.querySelector("#vercount_value_page_pv");
+      if (!span) return;
+
+      let url;
+      if (isSinglePage) {
+        url = location.href;
+      } else {
+        const article = vc.closest("article");
+        const titleLink = article && article.querySelector(".article-title a");
+        if (!titleLink) return;
+        url = new URL(titleLink.getAttribute("href"), location.origin).href;
+      }
+
+      fetch("https://events.vercount.one/api/v2/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url, isNewUv: false })
       })
-      .catch(() => {});
+        .then(r => r.json())
+        .then(j => {
+          if (j && j.status === "success" && j.data && j.data.page_pv != null) {
+            span.textContent = String(j.data.page_pv);
+          }
+        })
+        .catch(() => {});
+    });
   }
 
-  document.addEventListener("pjax:complete", refreshViewCount);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", refreshAllViewCounts);
+  } else {
+    refreshAllViewCounts();
+  }
+  document.addEventListener("pjax:complete", refreshAllViewCounts);
 </script>

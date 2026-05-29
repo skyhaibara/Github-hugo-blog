@@ -120,8 +120,8 @@
 		"selector": ".article-time--published",
 		"text": ["这是文章发布的时间哦～"]
 	}, {
-		"selector": ".article-time--reading",
-		"text": ["看完大概要这么久～", "阅读时长只是估算啦~"]
+		"selector": ".article-time--reading, #viewCount",
+		"text": ["这是文章被浏览的次数哦～", "看的人越多说明文章越受欢迎呢~", "数字越大,主人越开心~"]
 	}, {
 		"selector": ".article-lastmod",
 		"text": ["这是最后修改的时间～"]

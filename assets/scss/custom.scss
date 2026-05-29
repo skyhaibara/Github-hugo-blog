@@ -338,38 +338,12 @@ a {
   }
 }
 
-// 主页文章卡:整张卡可点击 — 标题链接的 ::after 拉成 overlay 盖住整个 article 容器
-// category badge 和封面图保留独立点击(去各自目标)
+// 主页文章卡:整张卡可点击 — 通过 JS 代理实现(见 footer/custom.html 的 cardClickProxy)
+// CSS 这边只负责光标反馈,不做 overlay,避免吃掉子元素的 hover 事件(waifu 提示要识别具体子元素)
 .article-list article {
-  position: relative;
-
-  .article-title a {
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-    }
-  }
-
-  .article-category,
-  .article-image {
-    position: relative;
-    z-index: 2;
-  }
-
-  // hover 整卡用站点自定义指针 cursor(和其他链接一致)
-  &:hover {
-    cursor: url(../mouse/333.png), pointer;
-  }
+  cursor: url(../mouse/333.png), pointer;
 }
 
-// 阅读次数(vercount)只在文章单页有意义:非文章页用 CSS 直接隐藏
-// 原因 1:列表里每张卡同 ID,getElementById 只能更新第一个,其他永远 loading
-// 原因 2:CSS 比 showHideView() 的 JS 更稳 — 不受 PJAX 跳转执行时机影响
-body:not(.article-page) #viewCount {
-  display: none !important;
-}
 
 // 头像旋转动画
 .sidebar header .site-avatar .site-logo {
