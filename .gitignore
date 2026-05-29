@@ -5,3 +5,5 @@ resources
 hugo.yaml
 # hugo命令
 hugo.exe
+.claude
+CLAUDE.md
