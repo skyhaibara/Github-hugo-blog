@@ -771,19 +771,28 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
 <script defer src="https://cn.vercount.one/js"></script>
 
 <script>
-  function showHideView() {
-      // 判断是否存在vercount标签
-      let viewCounts = document.querySelectorAll("#viewCount");
-      if (viewCounts.length > 0) {
-          // 判断是否为文章页
-          let article =  document.querySelector(".article-page");
-          if (!article) {
-              viewCounts.forEach(ele => {
-                  ele.style.display = 'none';
-              });
-          }
-      }
+  // 阅读次数 — 显示隐藏已由 CSS (body:not(.article-page) #viewCount) 接管,这里只处理 PJAX 后的更新
+  //
+  // vercount 是 IIFE 脚本,只在初次 DOMContentLoaded 执行一次,并把元素引用缓存到内部变量。
+  // PJAX 跳页后 DOM 被替换,但 vercount 既不会重跑也不会重查 DOM,导致新页的 span 永远停在 "loading..."。
+  // 兜底方案:监听 pjax:complete,如果落到文章页则手动直接调 vercount events API 写入 DOM。
+  function refreshViewCount() {
+    if (!document.body.classList.contains("article-page")) return;
+    const el = document.getElementById("vercount_value_page_pv");
+    if (!el) return;
+    fetch("https://events.vercount.one/api/v2/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: location.href, isNewUv: false })
+    })
+      .then(r => r.json())
+      .then(j => {
+        if (j && j.status === "success" && j.data && j.data.page_pv != null) {
+          el.textContent = String(j.data.page_pv);
+        }
+      })
+      .catch(() => {});
   }
-  
-  showHideView();
+
+  document.addEventListener("pjax:complete", refreshViewCount);
 </script>
