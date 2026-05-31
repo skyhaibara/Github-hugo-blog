@@ -1,9 +1,7 @@
-# 自动生成的文件
 public
 resources
 .hugo_build.lock
 hugo.yaml
-# hugo命令
 hugo.exe
 .claude
 CLAUDE.md

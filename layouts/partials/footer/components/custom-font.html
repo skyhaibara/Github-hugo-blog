@@ -1,0 +1,11 @@
+{{- /*
+    覆盖主题原版,屏蔽 Google Fonts (Lato) 的远程加载
+    --------
+    主题原版会注入 https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap
+    国内 GFW 拦截 fonts.googleapis.com,首屏会卡 10-30 秒等超时。
+    --base-font-family 已经有 "Lato" 之后的系统字体 fallback (PingFang/Segoe UI/Microsoft YaHei),
+    去掉 Google Fonts 后正文会无缝降级到系统字体,视觉差极小,加载立即变快。
+
+    如果以后想用 Lato,推荐自托管:从 https://gwfh.mranftl.com 下载 woff2,
+    放到 assets/font/,然后在 assets/scss/custom.scss 里加 @font-face。
+*/ -}}
