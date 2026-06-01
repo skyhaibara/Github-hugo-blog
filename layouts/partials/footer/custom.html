@@ -65,7 +65,10 @@
     });
   }
 
-  if (screen.width >= 768) {
+  // Live2D 推迟到 window.load 后浏览器空闲时加载 — 不抢首屏关键路径带宽
+  // moc3 模型文件 80+KB 串行下载会拖慢整页,推到 requestIdleCallback 后就不影响首屏 LCP/FCP
+  function startLive2D() {
+    if (screen.width < 768) return;
     Promise.all([
       loadExternalResource(cssPath, "css"),
       loadWithFallback("/Core/live2dcubismcore.js", "js"),
@@ -85,10 +88,26 @@
     }).catch(err => console.warn("[live2d] init failed:", err));
   }
 
+  function scheduleLive2D() {
+    if (window.requestIdleCallback) {
+      requestIdleCallback(startLive2D, { timeout: 3000 });
+    } else {
+      setTimeout(startLive2D, 1000);
+    }
+  }
+
+  if (document.readyState === "complete") {
+    scheduleLive2D();
+  } else {
+    window.addEventListener("load", scheduleLive2D, { once: true });
+  }
+
   // 这个 fork 版的 waifu-tips.js 不读 JSON 里的 mouseover/click 数组(只跑 time/seasons/message),
   // 自己挂事件代理:document.body 上一次性 mouseover + click,匹配 JSON 选择器,复用库自带的 #waifu-tips 气泡元素显示。
   function bindWaifuTips() {
-    fetch(tipsJsonPath).then(r => r.json()).then(tips => {
+    // force-cache:不发 If-Modified-Since 304 往返,直接命中浏览器缓存
+    // (waifu-tips.js 库刚刚已经拉过同一个 URL,缓存里一定有)
+    fetch(tipsJsonPath, { cache: "force-cache" }).then(r => r.json()).then(tips => {
       let lastHoverEl = null;
       let hideTimer = null;
 

@@ -1,0 +1,32 @@
+{{- /*
+    覆盖主题原版 article-list/default.html — 把首页文章卡的封面图改用 400w / 800w(2x)
+    主题原版走 components/header,header 一律 resize 800x + srcset 1600x,
+    首页卡片实际显示宽 280px 左右,高分屏拉 1600w 是几百 KB 的浪费。
+    这里手写更小的 srcset(400w 1x / 800w 2x),裁掉首页冗余带宽。
+*/ -}}
+{{ $image := partialCached "helper/image" (dict "Context" . "Type" "articleList") .RelPermalink "articleList" }}
+<article class="{{ if $image.exists }}has-image{{ end }}">
+    <header class="article-header">
+        {{ if $image.exists }}
+            <div class="article-image">
+                <a href="{{ .RelPermalink }}">
+                    {{ if $image.resource }}
+                        {{- $thumb := $image.resource.Resize "400x" -}}
+                        {{- $thumb2x := $image.resource.Resize "800x" -}}
+                        <img src="{{ $thumb.RelPermalink }}"
+                            srcset="{{ $thumb.RelPermalink }} 400w, {{ $thumb2x.RelPermalink }} 800w"
+                            sizes="(max-width: 768px) 100vw, 400px"
+                            width="{{ $thumb.Width }}"
+                            height="{{ $thumb.Height }}"
+                            loading="lazy"
+                            alt="Featured image of post {{ .Title }}" />
+                    {{ else }}
+                        <img src="{{ $image.permalink }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
+                    {{ end }}
+                </a>
+            </div>
+        {{ end }}
+
+        {{ partialCached "article/components/details" . .RelPermalink }}
+    </header>
+</article>
