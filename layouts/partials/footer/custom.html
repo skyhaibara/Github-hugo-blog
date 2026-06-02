@@ -714,36 +714,67 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
 
 
 {{- with .Site.Params.comments.giscus -}}
-<div class="js-Pjax">
-  <script>
-      (function () {
-          // 判断当前是否有文章评论标识
-          let comment = document.querySelector(".comment");
-          if (!comment) {
-              return
-          }
-          let script = document.createElement('script');
-          // 将对应评论的脚本内容填进去
-          script.setAttribute('src', 'https://giscus.app/client.js');
-          script.setAttribute('data-repo', '{{- .repo -}}');
-          script.setAttribute('data-repo-id', '{{- .repoID -}}');
-          script.setAttribute('data-category', '{{- .category -}}');
-          script.setAttribute('data-category-id', '{{- .categoryID -}}');
-          script.setAttribute('data-mapping', '{{- default `title` .mapping -}}');
-          script.setAttribute('data-strict', '{{- default 0 .strict -}}');
-          script.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-          script.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
-          script.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
-          script.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
-          script.setAttribute('data-lang', '{{- default `en` .lang -}}');
-          script.setAttribute('data-loading', '{{- .loading -}}');
-          script.setAttribute('crossorigin', 'anonymous');
-          script.async = true;
-          // 寻找合适的元素，添加脚本进去(在页脚前将评论脚本插入)
-          document.querySelector('.site-footer').before(script)
-      })(document);
-  </script>
-</div>
+<script>
+  // Giscus 评论管理 — 单一入口,处理初次加载 + PJAX 跳转 + 暗色模式同步
+  // 重点:把 <script src=...giscus.../client.js> 直接 append 进 .comment 容器,
+  // 而不是放在 .site-footer 之前,这样 giscus 替换出来的 iframe 也在 .comment 里。
+  // 用 iframe.giscus-frame 去重 — 重复触发(比如 PJAX 跳同一页两次)不会装载多份。
+  const GISCUS_CFG = {
+    "data-repo":            "{{- .repo -}}",
+    "data-repo-id":         "{{- .repoID -}}",
+    "data-category":        "{{- .category -}}",
+    "data-category-id":     "{{- .categoryID -}}",
+    "data-mapping":         "{{- default `title` .mapping -}}",
+    "data-strict":          "{{- default 0 .strict -}}",
+    "data-reactions-enabled": "{{- default 1 .reactionsEnabled -}}",
+    "data-emit-metadata":   "{{- default 0 .emitMetadata -}}",
+    "data-input-position":  "{{- default `top` .inputPosition -}}",
+    "data-lang":            "{{- default `en` .lang -}}",
+    "data-loading":         "{{- .loading -}}"
+  };
+  const GISCUS_LIGHT = "{{- default `light` .lightTheme -}}";
+  const GISCUS_DARK  = "{{- default `dark_dimmed` .darkTheme -}}";
+
+  function currentGiscusTheme() {
+    return document.documentElement.dataset.scheme === "dark" ? GISCUS_DARK : GISCUS_LIGHT;
+  }
+
+  function loadGiscus() {
+    const comment = document.querySelector(".comment");
+    if (!comment) return;                                           // 不是文章页就退
+    if (comment.querySelector("iframe.giscus-frame")) return;       // 已经装好了别重复
+    if (comment.querySelector("script[src*='giscus.app']")) return; // 脚本已经在加载中也别重复
+
+    const s = document.createElement("script");
+    s.src = "https://giscus.app/client.js";
+    s.async = true;
+    s.crossOrigin = "anonymous";
+    s.setAttribute("data-theme", currentGiscusTheme());
+    for (const [k, v] of Object.entries(GISCUS_CFG)) s.setAttribute(k, v);
+    comment.innerHTML = "";   // 清空旧 iframe(如果有)
+    comment.appendChild(s);
+  }
+
+  // 暗色切换时通过 postMessage 通知已加载的 iframe 换主题
+  function syncGiscusTheme() {
+    const iframe = document.querySelector("iframe.giscus-frame");
+    if (!iframe) return;
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: currentGiscusTheme() } } },
+      "https://giscus.app"
+    );
+  }
+
+  // 初次加载 + 每次 PJAX 跳转都重新挂载
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadGiscus);
+  } else {
+    loadGiscus();
+  }
+  document.addEventListener("pjax:complete", loadGiscus);
+  // 主题的暗色切换会派发 onColorSchemeChange 自定义事件
+  window.addEventListener("onColorSchemeChange", syncGiscusTheme);
+</script>
 {{- end -}}
 
 {{ with resources.Get "js/topbar.min.js" }}

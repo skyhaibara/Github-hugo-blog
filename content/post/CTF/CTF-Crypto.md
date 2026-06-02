@@ -6,7 +6,7 @@ categories = ["CTF"]
 weight = 2
 +++
 
-zyt大佬捏：[horostal.github.io](horostal.github.io)
+zyt大佬捏：[horostal.github.io](http://horostal.github.io)
 ## Pisano 周期
 
 2<sub>n+2</sub> = b * u<sub>n+1</sub> + c * u<sub>n</sub>

@@ -131,7 +131,7 @@ params:
             siteName: "" # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
 
         giscus:
-            repo: "skyhaibara/github_hugo"
+            repo: "skyhaibara/Github-hugo-blog"
             repoID: "R_kgDOOATInQ"
             category: "General"
             categoryID: "DIC_kwDOOATInc4CnytA"

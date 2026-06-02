@@ -1,0 +1,8 @@
+{{- /*
+    覆盖主题原版,渲染为空 — 改由 footer/custom.html 的 loadGiscus() 函数统一处理
+    --------
+    原因:主题原版用 <script src=".../client.js" async data-...> 静态渲染,
+    在 PJAX 跳转(.main-container 内容替换)时,新插入的 <script> 标签里
+    document.currentScript 为 null,giscus 读不到 data-* 配置 → 静默失败。
+    现在改为 JS 主动控制 — 在 DOMContentLoaded + pjax:complete 时检查并 mount。
+*/ -}}
