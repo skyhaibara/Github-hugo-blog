@@ -455,39 +455,30 @@
 </style>
 
 <script>
-    function initTocHide() {
-        // 判断是否存在文章目录
-        let toc = document.querySelector(".widget--toc");
-        if (!toc) {
-            return;
+    // 目录展开/收起 — scroll 监听只挂一次,内部全部用 querySelector 实时找元素
+    // 这样:
+    //   ① 首屏无 TOC(首页/无标题文章)→ 监听里 querySelector 拿不到 → 自然 skip 不影响
+    //   ② PJAX 跳到有 TOC 的文章 → 新 .active-class 元素存在 → 监听自动接管
+    //   ③ 不会因为 PJAX 重新调用 init 而重复绑定 listener
+    window.addEventListener('scroll', function() {
+        // 清空所有 .open(每次滚动重新计算高亮路径)
+        document.querySelectorAll(".open").forEach((ul) => ul.classList.remove("open"));
+
+        // 当前激活的 TOC 节点(Stack 主题的 scrollspy 给它加的 .active-class)
+        let currentLi = document.querySelector(".active-class");
+        if (!currentLi) return;   // 当前页面无 TOC 或没滚到任何标题区,什么都不做
+
+        // 展开子 ul
+        if (currentLi.children.length > 1) {
+            currentLi.children[1].classList.add("open");
         }
-        // 监听滚动
-        window.addEventListener('scroll', function() {
-            //清除class值
-            let openUl = document.querySelectorAll(".open");
-            if (openUl.length > 0) {
-              openUl.forEach((ul) => {
-                ul.classList.remove("open")
-              })
-            }
-            // 获取active-class
-            let currentLi = document.querySelector(".active-class");
-            if (!currentLi) {
-                return
-            }
-            // 展示子ul
-            if (currentLi.children.length > 1) {
-                currentLi.children[1].classList.add("open")
-            }
-            // 展示父ul
-            let ul = currentLi.parentElement;
-            do {
-                ul.classList.add("open");
-                ul = ul.parentElement.parentElement
-            } while (ul !== undefined && (ul.localName === 'ul' || ul.localName === 'ol'))
-        });
-    }
-    initTocHide()
+        // 沿父链向上把所有祖先 ul 展开
+        let ul = currentLi.parentElement;
+        while (ul && (ul.localName === 'ul' || ul.localName === 'ol')) {
+            ul.classList.add("open");
+            ul = ul.parentElement && ul.parentElement.parentElement;
+        }
+    });
 </script>
 
 <style>
@@ -506,33 +497,43 @@
 <script>
     /**
      * 滚动回顶部初始化
+     * 三处只针对"按钮出现不到"的修复,CSS 不动,默认位置不变:
+     *   1. 没右侧栏的页面(首页/无 widget 文章)fallback 到 body(因为 #backTopBtn 是 position: fixed,
+     *      parent 是 sidebar 还是 body 都不影响视觉位置 — 都按 bottom: 30px 锚定)
+     *   2. 已存在按钮就跳过(避免 PJAX 跳页重复调用时多挂)
+     *   3. scroll 监听只挂一次,内部用 getElementById 实时找当前按钮 —
+     *      PJAX 切页后即使旧按钮被一起替换掉,新按钮依旧能被监听到
      */
     function initScrollTop() {
-        let rightSideBar = document.querySelector(".right-sidebar");
-        if (!rightSideBar) {
-            return;
-        }
-        // 添加返回顶部按钮到右侧边栏
+        // 已经创建过就跳过,防 PJAX 多次触发
+        if (document.getElementById("backTopBtn")) return;
+
+        // 优先挂右侧栏(保持原默认行为),没有就 fallback 到 body
+        let target = document.querySelector(".right-sidebar") || document.body;
+
         let btn = document.createElement("div");
         btn.id = "backTopBtn";
-        btn.onclick = backToTop
-        rightSideBar.appendChild(btn)
-        // 滚动监听
-        window.addEventListener('scroll', function() {
-            // 当网页向下滑动 20px 出现"返回顶部" 按钮
-            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                btn.style.display = "block";
-            } else {
-                btn.style.display = "none";
-            }
-        });
+        btn.onclick = backToTop;
+        target.appendChild(btn);
     }
 
     function backToTop(){
         window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
+    // 滚动监听只挂一次 — 用 getElementById 实时找按钮,PJAX 跳页换了新按钮也能命中
+    window.addEventListener('scroll', function() {
+        const btn = document.getElementById("backTopBtn");
+        if (!btn) return;
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            btn.style.display = "block";
+        } else {
+            btn.style.display = "none";
+        }
+    });
+
     initScrollTop();
+    document.addEventListener("pjax:complete", initScrollTop);
 </script>
 
 <style>
@@ -700,7 +701,9 @@ function initCodeMoreBox() {
 }
 
 // 等待 DOM 完全渲染（防止抢 highlight.js 的时机）
+// + PJAX 跳页后新页面的代码块也需要重新初始化(initCodeMoreBox 自带 code-more-init 类去重,重复调用安全)
 document.addEventListener("DOMContentLoaded", initCodeMoreBox);
+document.addEventListener("pjax:complete", initCodeMoreBox);
 </script>
 
 
@@ -711,7 +714,6 @@ document.addEventListener("DOMContentLoaded", initCodeMoreBox);
 <script>
   particlesJS.load('particles-js', {{ (resources.Get "background/particlesjs-config.json").Permalink }});
 </script>
-
 
 {{- with .Site.Params.comments.giscus -}}
 <script>

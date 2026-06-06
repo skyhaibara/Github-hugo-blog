@@ -535,45 +535,56 @@ a {
     ul, ol { margin-top: 0.3em; }
   }
 
-  // 无序列表 → 圆点 bullet
+  // 无序列表 → 左侧渐变小竖条 + hover 微移
   ul > li {
     list-style: none;
     position: relative;
     &::before {
       content: '';
       position: absolute;
-      left: -1.15em;
-      top: 0.7em;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-color);
+      left: -1em;
+      top: 0.55em;
+      width: 3px;
+      height: 0.9em;
+      border-radius: 2px;
+      background: linear-gradient(180deg, var(--accent-color), transparent);
       opacity: 0.85;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+    &:hover::before {
+      transform: translateX(2px);
+      opacity: 1;
     }
   }
 
-  // 有序列表 → 数字带圆形背景
+  // 有序列表 → 编辑风格双位数前导零(01, 02 ...)+ 等宽字体 + accent 色
+  // 杂志/新闻列表常用样式,放 10+ 项时整齐统一,不像圆形徽章那样"幼态"
   ol {
     counter-reset: ol-counter;
+    padding-left: 2.6em;     // 给 ::before 留出双位数空间
     > li {
       list-style: none;
       position: relative;
       counter-increment: ol-counter;
       &::before {
-        content: counter(ol-counter);
+        content: counter(ol-counter, decimal-leading-zero);  // 01, 02 ... 自动补零
         position: absolute;
-        left: -1.9em;
-        top: 0.1em;
-        width: 1.4em;
-        height: 1.4em;
-        border-radius: 50%;
-        background: var(--accent-color);
-        color: #fff;
-        font-size: 0.78em;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        left: -2.6em;
+        top: 0.08em;
+        color: var(--accent-color);
+        font-family: var(--code-font-family);
+        font-size: 0.95em;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        // 数字下方加一道很细的下划线,有"编号锚点"感
+        border-bottom: 1px solid var(--accent-color);
+        padding-bottom: 1px;
+        opacity: 0.85;
+        transition: opacity .25s ease, transform .25s ease;
+      }
+      &:hover::before {
+        opacity: 1;
+        transform: translateX(-2px);   // 反向微移,跟 ul 的"右滑"对称
       }
     }
   }
@@ -740,4 +751,10 @@ a {
   display: block;
   border-radius: 8px;
   cursor: zoom-in;
+}
+
+// TOC 改用 ul(hugo.yaml: tableOfContents.ordered = false)后,确保浏览器默认 disc bullet 不出现
+// 主题原版只给 ol 配了 list-style: none,ul 会 fallback 到默认 disc,这里补一刀
+.widget--toc #TableOfContents ul {
+  list-style: none;
 }
