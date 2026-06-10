@@ -758,3 +758,110 @@ a {
 .widget--toc #TableOfContents ul {
   list-style: none;
 }
+
+// ================================================================
+// .storytelling — 叙事块样式(由 {{< story >}} shortcode 包裹)
+// ----------------------------------------------------------------
+// 目标:让多行短句读起来像散文/剧本/对白节奏 —— 衬线、节制色彩、宽行距
+// 默认单栏居中;加 .dialog-mode 时切换成左右聊天气泡布局
+// ================================================================
+.article-content .storytelling {
+  font-family: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong", "宋体", serif;
+  font-size: 1.05em;
+  line-height: 2;
+  letter-spacing: 0.06em;
+  color: var(--card-text-color-secondary, rgba(60, 50, 50, 0.82));
+  text-align: center;
+  max-width: 30em;
+  margin: 3.5em auto;
+  padding: 1em 0;
+  position: relative;
+
+  p {
+    margin: 0.25em 0;
+    background-image: none;   // 不让 article-content 的链接下划线动画影响这里
+  }
+
+  // 头尾各一个 ❖ 装饰符,标志故事开始 / 结束
+  &::before,
+  &::after {
+    content: "❖";
+    display: block;
+    text-align: center;
+    color: var(--accent-color);
+    opacity: 0.4;
+    font-size: 1.4em;
+    margin: 1.5em 0;
+    letter-spacing: 0;
+  }
+
+  // 用 hr 做章节分隔(可选,在 .md 里写 --- 即可)
+  hr {
+    border: none;
+    margin: 2em auto;
+    height: 1em;
+    background: none;
+    &::after {
+      content: "✦  ✦  ✦";
+      display: block;
+      text-align: center;
+      letter-spacing: 0.5em;
+      opacity: 0.3;
+      color: var(--accent-color);
+      font-size: 0.85em;
+    }
+  }
+
+  // ============================================================
+  // .dialog-mode — 双栏聊天气泡(自动按说话人左右分)
+  // 旁白(场景描写)居中无气泡,做"剧本舞台说明"感
+  // ============================================================
+  &.dialog-mode {
+    text-align: initial;
+    max-width: 44em;
+
+    p {
+      max-width: 48%;
+      margin: 0.5em 0;
+      line-height: 1.75;
+      word-break: break-word;
+    }
+
+    // 「我」右栏 — 靠右对齐 + emphasize 色淡染(无气泡,只用方位和字色区分)
+    .dialog-me {
+      margin-left: auto;
+      text-align: right;
+      color: var(--emphasize-text-color);
+    }
+
+    // 「朋友 / 他」左栏 — 靠左 + 中性灰
+    .dialog-friend {
+      margin-right: auto;
+      color: var(--card-text-color-tertiary, rgba(120, 110, 110, 0.65));
+    }
+
+    // 旁白 — 没气泡,居中斜体灰,像舞台说明
+    .dialog-narration {
+      max-width: 100%;
+      text-align: center;
+      background: none;
+      color: rgba(140, 130, 130, 0.7);
+      font-size: 0.92em;
+      font-style: italic;
+      padding: 0.2em 0;
+      margin: 1.2em 0;
+      border-radius: 0;
+    }
+  }
+}
+
+// 暗色模式
+[data-scheme="dark"] .article-content .storytelling {
+  color: rgba(255, 255, 255, 0.78);
+
+  &.dialog-mode {
+    .dialog-narration {
+      color: rgba(220, 210, 210, 0.55);
+    }
+  }
+}

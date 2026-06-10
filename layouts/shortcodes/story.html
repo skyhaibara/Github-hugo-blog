@@ -1,0 +1,39 @@
+{{- /*
+  story shortcode — 把每个短行渲染成独立 <p>,自动按说话人分两栏聊天气泡
+
+  用法:
+    {{< story >}}
+    "你知道失败的恋爱最像什么吗?"
+    朋友说:
+    "像散场。"
+    我摇头。
+    {{< /story >}}
+
+  说话人识别规则(行首):
+    "我..."          → 右栏(narrator)
+    "朋友..." "他..." → 左栏(friend)
+    "..." 引号开头   → 继承上一行说话人
+    其他纯场景描写   → 居中 narration(无气泡)
+
+  如果某行识别错了,可以手动加单字开头修正:
+    "(原本是旁白的话)" 在前面加 "我 " 或 "朋友 " 就能强制归属
+*/ -}}
+<div class="storytelling dialog-mode">
+{{- $speaker := "me" -}}
+{{- range $line := split (trim .Inner "\n") "\n" -}}
+  {{- $trimmed := trim $line " \t\r" -}}
+  {{- if $trimmed -}}
+    {{- $class := "dialog-narration" -}}
+    {{- if hasPrefix $trimmed "我" -}}
+      {{- $speaker = "me" -}}
+      {{- $class = "dialog-me" -}}
+    {{- else if or (hasPrefix $trimmed "朋友") (hasPrefix $trimmed "他") -}}
+      {{- $speaker = "friend" -}}
+      {{- $class = "dialog-friend" -}}
+    {{- else if or (hasPrefix $trimmed "“") (or (hasPrefix $trimmed "\"") (hasPrefix $trimmed "”")) -}}
+      {{- $class = printf "dialog-%s" $speaker -}}
+    {{- end -}}
+    <p class="{{ $class }}">{{ $trimmed | safeHTML }}</p>
+  {{- end -}}
+{{- end -}}
+</div>
