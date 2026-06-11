@@ -492,28 +492,39 @@
         height: 24px;
         background-image: url({{ (resources.Get "icons/backTop.svg").Permalink }});
     }
+
+    /* 无右侧栏的页面(归档/技术链接)按钮挂在 body 上,
+       fixed 元素不写 left/right 时水平落在 static position(body 左端)导致错位,
+       这里显式锚到右下角 */
+    #backTopBtn.backTop-corner {
+        right: 30px;
+    }
 </style>
 
 <script>
     /**
      * 滚动回顶部初始化
      * 三处只针对"按钮出现不到"的修复,CSS 不动,默认位置不变:
-     *   1. 没右侧栏的页面(首页/无 widget 文章)fallback 到 body(因为 #backTopBtn 是 position: fixed,
-     *      parent 是 sidebar 还是 body 都不影响视觉位置 — 都按 bottom: 30px 锚定)
-     *   2. 已存在按钮就跳过(避免 PJAX 跳页重复调用时多挂)
+     *   1. 没右侧栏的页面(归档/技术链接等)fallback 到 body,并加 .backTop-corner 显式锚到右下角
+     *      (fixed 元素不写 left/right 时水平方向落在 static position,挂 body 会错位到左下角)
+     *   2. 已存在按钮就复用并移动到当前页的正确父级(避免 PJAX 跳页后挂错地方或重复创建)
      *   3. scroll 监听只挂一次,内部用 getElementById 实时找当前按钮 —
      *      PJAX 切页后即使旧按钮被一起替换掉,新按钮依旧能被监听到
      */
     function initScrollTop() {
-        // 已经创建过就跳过,防 PJAX 多次触发
-        if (document.getElementById("backTopBtn")) return;
-
         // 优先挂右侧栏(保持原默认行为),没有就 fallback 到 body
         let target = document.querySelector(".right-sidebar") || document.body;
 
-        let btn = document.createElement("div");
-        btn.id = "backTopBtn";
-        btn.onclick = backToTop;
+        // 已存在就复用并移动到当前页的正确父级 —
+        // PJAX 从归档/链接跳回文章时,挂在 body 上的旧按钮不会被替换掉,必须重新归位
+        let btn = document.getElementById("backTopBtn");
+        if (!btn) {
+            btn = document.createElement("div");
+            btn.id = "backTopBtn";
+            btn.onclick = backToTop;
+        }
+        // 挂 body 时(归档/技术链接没有 .right-sidebar)显式锚到右下角
+        btn.classList.toggle("backTop-corner", target === document.body);
         target.appendChild(btn);
     }
 
