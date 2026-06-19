@@ -414,6 +414,7 @@ a {
 
     > li > a {
         font-size: 1.65rem;
+        font-weight: bold;   // 全部加粗 — 单字重伪加粗对每项一致,大小统一
         transition: transform .25s ease;
 
         > svg {
@@ -421,12 +422,6 @@ a {
             height: 24px;
             transition: transform .25s ease;
         }
-    }
-
-    // 首项加粗 + 略大,跟其它项形成视觉锚点
-    > li:nth-child(1) > a > span {
-        font-weight: bold;
-        font-size: 1.85rem;
     }
 
     > li:hover > a {
@@ -437,7 +432,6 @@ a {
         }
     }
 }
-
 // 底部社交图标尺寸
 .sidebar .menu-social li svg {
     width: 28px;
