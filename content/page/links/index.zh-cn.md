@@ -1,6 +1,11 @@
 ---
 title: 技术链接
 links:
+  - title: 雨云 RainYun
+    description: 国产高性价比云服务商,云服务器 / 游戏云 / 对象存储俱全。本站博主的 Minecraft 服务器就跑在雨云 —— 新人首月 5 折,开服建站性价比拉满 👉
+    website: https://www.rainyun.com/MTE0Njc3OQ==_
+    image: rainyun-logo.png
+
   - title: GitHub
     description: GitHub is the world's largest software development platform.
     website: https://github.com

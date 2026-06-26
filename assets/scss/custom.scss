@@ -316,7 +316,22 @@ a {
         margin-right: 8px;
       }
     }
+
+    // 雨云(首项)单独占满一整行 —— logo 较大,给它更宽的展示空间,不跟其它三栏挤在一起
+    article:first-child {
+      grid-column: 1 / -1;
+      margin-right: 0;
+    }
   }
+}
+
+// 雨云友链 logo 是横版长图(约 1120×390,透明底):覆盖默认方形 cover,按原比例完整展示不裁切
+// (放在媒体查询外 —— 桌面跨整行 / 手机单栏 都生效)
+.article-list--compact.links article:first-child .article-image img {
+  width: auto;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 0;
 }
 
 .article-list--tile article {
