@@ -1,8 +1,8 @@
 ---
-title: "CTF"
-description: "studying in CTF"
+title: "MC"
+description: "是MC不是鸣潮"
 slug: "categories"
-image: "椿.webp"
+image: "MC.webp"
 style:
     background: "#6981E1FF"
     color: "#fff"

@@ -1,6 +1,6 @@
 ---
 title: "CS"
-description: "This is an example category"
+description: "better VoIP in windows"
 slug: "categories"
 image: "bb.webp"
 style:

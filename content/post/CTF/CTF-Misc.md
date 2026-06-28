@@ -1,7 +1,7 @@
 +++
 date = 2025-03-06T18:00:00+08:00
 title = "CTF Misc"
-image = "Cover/Mc.webp"
+image = "Cover/pbdzd.webp"
 categories = ["CTF"]
 weight = 1
 +++

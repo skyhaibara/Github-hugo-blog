@@ -414,11 +414,96 @@
     document.addEventListener("click", e => {
       const article = e.target.closest(".article-list article");
       if (!article) return;
+      if (article.closest(".drag-scroll-click-blocked")) return;
       if (e.target.closest("a")) return;  // 已经在链接上,放行原始行为
       const titleLink = article.querySelector(".article-title a");
       if (titleLink) titleLink.click();
     });
   })();
+</script>
+
+<script>
+  // 归档页横向分类卡片:允许按住卡片本身左右拖动,同步移动底部滚动条。
+  // 用 pointer 事件覆盖鼠标/触控笔/触屏;拖动后拦截一次 click,避免误触分类链接。
+  function initArchiveDragScroll() {
+    const scrollers = document.querySelectorAll(".template-archives .subsection-list");
+
+    scrollers.forEach(scroller => {
+      if (scroller.dataset.dragScrollInit === "true") return;
+      scroller.dataset.dragScrollInit = "true";
+
+      let pointerId = null;
+      let startX = 0;
+      let startY = 0;
+      let startScrollLeft = 0;
+      let dragging = false;
+      let blockClick = false;
+
+      scroller.querySelectorAll("a, img").forEach(el => {
+        el.setAttribute("draggable", "false");
+      });
+
+      const reset = () => {
+        if (dragging || blockClick) {
+          scroller.classList.remove("is-dragging");
+          scroller.classList.add("drag-scroll-click-blocked");
+          setTimeout(() => {
+            blockClick = false;
+            scroller.classList.remove("drag-scroll-click-blocked");
+          }, 120);
+        }
+        dragging = false;
+        pointerId = null;
+      };
+
+      scroller.addEventListener("pointerdown", e => {
+        if (e.button !== undefined && e.button !== 0) return;
+        if (scroller.scrollWidth <= scroller.clientWidth) return;
+
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        startScrollLeft = scroller.scrollLeft;
+        dragging = false;
+        blockClick = false;
+      });
+
+      scroller.addEventListener("dragstart", e => {
+        e.preventDefault();
+      });
+
+      scroller.addEventListener("pointermove", e => {
+        if (pointerId !== e.pointerId) return;
+
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+
+        if (!dragging) {
+          if (Math.abs(deltaX) < 6 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+          dragging = true;
+          blockClick = true;
+          scroller.classList.add("is-dragging");
+          scroller.setPointerCapture(pointerId);
+        }
+
+        e.preventDefault();
+        scroller.scrollLeft = startScrollLeft - deltaX;
+      });
+
+      scroller.addEventListener("pointerup", reset);
+      scroller.addEventListener("pointercancel", reset);
+      scroller.addEventListener("lostpointercapture", reset);
+
+      scroller.addEventListener("click", e => {
+        if (!blockClick) return;
+        e.preventDefault();
+        e.stopPropagation();
+      }, true);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initArchiveDragScroll);
+  document.addEventListener("pjax:complete", initArchiveDragScroll);
 </script>
 
 

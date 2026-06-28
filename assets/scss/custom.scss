@@ -277,6 +277,28 @@ a {
 //--------------------------------------------------
 //归档页面双栏
 /* 归档页面两栏 */
+.template-archives .subsection-list {
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+  scroll-behavior: smooth;
+}
+
+.template-archives .subsection-list a,
+.template-archives .subsection-list img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.template-archives .subsection-list.is-dragging {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.template-archives .subsection-list.is-dragging a {
+  pointer-events: none;
+}
+
 @media (min-width: 1024px) {
   .article-list--compact {
     display: grid;
