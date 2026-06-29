@@ -3,7 +3,7 @@ date = '2026-06-26T10:00:00+08:00'
 weight = 1
 title = '用雨云开一台 Minecraft 模组服'
 slug = 'rainyun-minecraft'
-image = "/Cover/MC.webp"
+image = "/Cover/Minecraft.webp"
 categories = ["MC"]
 +++
 
